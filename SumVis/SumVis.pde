@@ -5,15 +5,11 @@ import toxi.physics2d.behaviors.*;
 // Reference to physics world
 VerletPhysics2D physics;
 
-// A list of cluster objects
-//ArrayList clusters;
-
 color bgcol = #0A2D43; 
-//String dataset; 
 
 Cluster c; 
 
-private String dataset = "cliqueStarClique_top10ordered.model"; 
+private String dataset; 
 
 void setup() {
   background(bgcol); 
@@ -25,10 +21,10 @@ void setup() {
   
   // create graph
   Vec2D center = new Vec2D(width/2,height/2);
-  String dataset = "cliqueStarClique_top10ordered.model"; 
+  dataset = "cliqueStarClique_top10ordered.model"; 
   c = new Cluster(dataset, 200, center);
   
-  size(500,500); 
+  size(800,800); 
   smooth(); 
   rectMode(CENTER); 
 }

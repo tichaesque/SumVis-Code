@@ -1,14 +1,14 @@
+// Code adapted from:
 // The Nature of Code
 // Daniel Shiffman
 // http://natureofcode.com
-
-// Force directed graph
-// Heavily based on: http://code.google.com/p/fidgen/
 
 class Cluster {
 
   // A cluster is a grouping of nodes
   ArrayList<Glyph> glyphs;
+  // A list of all the connected pairs
+  ArrayList<VerletParticle2D[]> connections;
 
   float diameter;
   
@@ -19,6 +19,7 @@ class Cluster {
 
     // Initialize the ArrayList
     glyphs = new ArrayList();
+    connections = new ArrayList<VerletParticle2D[]>(); 
 
     // Set the diameter
     diameter = d;
@@ -27,8 +28,7 @@ class Cluster {
 
     // Create the glyphs
     processStructures(dataset);
-    
-
+   
   }
   
   void processStructures(String dataset) {
@@ -37,6 +37,7 @@ class Cluster {
       
     //processes structures
     for(int i = 0; i < structures.length; i++) {
+      // The glyph class is the first symbol in the line
       String glyphclass = (split(structures[i], ' '))[0]; 
       /* NEED TO ADD
         - size scaling (proportional to the number of nodes in the structure)
@@ -44,20 +45,42 @@ class Cluster {
       float size = 30f; 
       
       Glyph g = new Glyph(center.add(Vec2D.randomVector()), size, glyphclass);
-      //Glyph g = new Glyph(center.add(Vec2D.randomVector())); 
       glyphs.add(g); 
       
     }
     
-    // Connect all the nodes with a Spring
-    for (int i = 1; i < glyphs.size(); i++) {
-      VerletParticle2D pi = (VerletParticle2D) glyphs.get(i);
-      for (int j = 0; j < i; j++) {
-        VerletParticle2D pj = (VerletParticle2D) glyphs.get(j);
-        // A Spring needs two particles, a resting length, and a strength
-        physics.addSpring(new VerletSpring2D(pi,pj,diameter,0.01));
+    for(int i = 0; i < structures.length; i++) {
+      String[] currentStructure = split(structures[i], ' ');
+      
+      // loop through node ids contained in current structure
+      for(int j = 1; j < currentStructure.length; j++) {
+        int node1ID = int(currentStructure[j]);
+        
+        for(int k = i+1; k < structures.length; k++) {
+          
+          String[] otherStructure = split(structures[k], ' ');
+          
+          for(int l = 1; l < otherStructure.length; l++) {
+          
+            int node2ID = int(otherStructure[l]);
+            
+            if(node1ID == node2ID) {
+              VerletParticle2D pi = (VerletParticle2D) glyphs.get(i);
+              VerletParticle2D pk = (VerletParticle2D) glyphs.get(k);
+              
+              physics.addSpring(new VerletSpring2D(pi,pk,diameter,0.01));
+              VerletParticle2D[] newConnection = { pi, pk };
+              connections.add(newConnection); 
+              
+              break; 
+            }
+          }
+          
+        }
       }
+      
     }
+    
   }
 
   void display() {
@@ -71,13 +94,14 @@ class Cluster {
 
   // Draw all the internal connections
   void showConnections() {
-    stroke(255);
-    for (int i = 0; i < glyphs.size(); i++) {
-      VerletParticle2D pi = (VerletParticle2D) glyphs.get(i);
-      for (int j = i+1; j < glyphs.size(); j++) {
-        VerletParticle2D pj = (VerletParticle2D) glyphs.get(j);
-        line(pi.x,pi.y,pj.x,pj.y);
-      }
+    strokeWeight(3);
+    stroke(255); 
+    
+    for (int i = 0; i < connections.size(); i++) {
+      VerletParticle2D c1 = (VerletParticle2D) connections.get(i)[0];
+      VerletParticle2D c2 = (VerletParticle2D) connections.get(i)[1];
+      
+      line(c1.x,c1.y,c2.x,c2.y);
     }
   }
 
@@ -93,7 +117,6 @@ class Cluster {
       if(g.contains(mouseX,mouseY)) {
         g.setClicked(true); 
         
-        // only use the first instance
         break; 
       }
     }
