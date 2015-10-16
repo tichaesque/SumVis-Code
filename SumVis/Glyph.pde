@@ -41,7 +41,7 @@ class Glyph extends VerletParticle2D {
     if(glyphclass.equals("fc")) {
       fill(fc_col);
       rectMode(CENTER); 
-      rect(x,y,size,size);
+      rect(x,y,size,size,cliqueRoundness);
     }
   }
   

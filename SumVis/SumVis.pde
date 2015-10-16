@@ -20,6 +20,9 @@ private String dataset;
 
 PFont bitfont;
 
+// 
+int cliqueRoundness = 0;
+
 void setup() {
   background(bgcol); 
   size(800,800);  
@@ -42,24 +45,40 @@ void setup() {
   smooth(); 
   rectMode(CENTER); 
   
-  cp5.addButton("Glyph Options")
-     .setValue(0)
+  // UI stuff
+  cp5.addButton("glyphOptions")
+     .setLabel("Glyph Options")
      .setPosition(30,50)
      .setSize(100,30)
      .setColorBackground(#061b28)
      .setColorForeground(#ff8c19)
      ;
+     
+  cp5.addButton("saveScreen")
+     .setLabel("Save Screen")
+     .setPosition(200,50)
+     .setSize(100,30)
+     .setColorBackground(#061b28)
+     .setColorForeground(#ff8c19)
+     ;
   
+  cp5.addSlider("cliqueRoundness")
+     .setPosition(30,100)
+     .setRange(0,4)
+     .setLabel("Clique Roundness")
+     ;
 }
 
 public void controlEvent(ControlEvent theEvent) {
-  println(theEvent.getController().getName());
+  //println(theEvent.getController().getName());
 }
 
-// function colorA will receive changes from 
-// controller with name colorA
-public void colorA(int theValue) {
-  println("a button event from colorA: "+theValue);
+public void glyphOptions(int theValue) {
+  println("a button event from glyphOptions: "+theValue);
+}
+
+public void saveScreen(int theValue) {
+  saveFrame(); 
 }
 
 void mouseReleased() {
