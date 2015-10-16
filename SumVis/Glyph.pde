@@ -5,7 +5,7 @@ class Glyph extends VerletParticle2D {
   float size; 
   String glyphclass; 
   
-  private color fc_col = #ffa500; 
+  //private color fc_col = #ffa500; 
   
   Glyph(Vec2D pos, float size_, String glyphclass_) { 
     super(pos);
@@ -39,7 +39,8 @@ class Glyph extends VerletParticle2D {
     
     /* Full cliques are represented as squares */
     if(glyphclass.equals("fc")) {
-      fill(fc_col);
+      color fc_fill = (color(fc_hue,255,255)); 
+      fill(fc_fill);
       rectMode(CENTER); 
       rect(x,y,size,size,cliqueRoundness);
     }

@@ -20,11 +20,13 @@ private String dataset;
 
 PFont bitfont;
 
-// 
+// Clique customization
 int cliqueRoundness = 0;
+float fc_hue = 28.05; 
 
 void setup() {
   background(bgcol); 
+  colorMode(HSB, 255);
   size(800,800);  
   textSize(15);
   cp5 = new ControlP5(this);
@@ -67,18 +69,12 @@ void setup() {
      .setRange(0,4)
      .setLabel("Clique Roundness")
      ;
-}
-
-public void controlEvent(ControlEvent theEvent) {
-  //println(theEvent.getController().getName());
-}
-
-public void glyphOptions(int theValue) {
-  println("a button event from glyphOptions: "+theValue);
-}
-
-public void saveScreen(int theValue) {
-  saveFrame(); 
+     
+  cp5.addSlider("fc_hue")
+     .setPosition(30,130)
+     .setRange(0,255)
+     .setLabel("Clique Hue")
+     ;
 }
 
 void mouseReleased() {
@@ -114,7 +110,15 @@ void draw() {
   
 }
 
-boolean overRect(float x, float y, float w, float h)  { 
-  return ((x-w/2) <= mouseX && mouseX <= (x+w/2) && 
-      (y-h/2) <= mouseY && mouseY <= (y+h/2));
+// UI STUFF
+public void controlEvent(ControlEvent theEvent) {
+  //println(theEvent.getController().getName());
+}
+
+public void glyphOptions(int theValue) {
+  println("a button event from glyphOptions: "+theValue);
+}
+
+public void saveScreen(int theValue) {
+  saveFrame(); 
 }
