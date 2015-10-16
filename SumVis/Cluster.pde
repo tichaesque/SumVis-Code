@@ -104,23 +104,6 @@ class Cluster {
       line(c1.x,c1.y,c2.x,c2.y);
     }
   }
-/*
-  void mouseReleased() {
-    for (Glyph g: glyphs) {
-      g.setClicked(false); 
-    }
-  }
-  
-  void mousePressed() { 
-    // Check to see if the mouse was clicked on the box
-    for (Glyph g: glyphs) {
-      if(g.contains(mouseX,mouseY)) {
-        g.setClicked(true); 
-        
-        break; 
-      }
-    }
-  }*/
 
   ArrayList getGlyphs() {
     return glyphs;

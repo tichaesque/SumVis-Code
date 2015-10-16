@@ -5,6 +5,9 @@
 import toxi.geom.*;
 import toxi.physics2d.*;
 import toxi.physics2d.behaviors.*;
+import controlP5.*;
+
+ControlP5 cp5;
 
 // Reference to physics world
 VerletPhysics2D physics;
@@ -14,15 +17,18 @@ color bgcol = #0A2D43;
 Cluster c; 
 
 private String dataset;
-private float glyphOptionsX; 
-private float glyphOptionsY; 
-private float glyphOptionsW;
-private float glyphOptionsH; 
-private boolean overOptions; 
+
+PFont bitfont;
 
 void setup() {
   background(bgcol); 
+  size(800,800);  
   textSize(15);
+  cp5 = new ControlP5(this);
+  pixelDensity(displayDensity());
+  
+  bitfont = createFont("Nintendo-DS-BIOS",20,true); 
+  textFont(bitfont); 
   
   // Initialize the physics
   physics=new VerletPhysics2D();
@@ -33,14 +39,27 @@ void setup() {
   dataset = "cliqueStarClique_top10ordered.model"; 
   c = new Cluster(dataset, 200, center);
   
-  glyphOptionsX = width-110; 
-  glyphOptionsY = height*0.85+55; 
-  glyphOptionsW = 120; 
-  glyphOptionsH = 40; 
-  
-  size(800,800); 
   smooth(); 
   rectMode(CENTER); 
+  
+  cp5.addButton("Glyph Options")
+     .setValue(0)
+     .setPosition(30,50)
+     .setSize(100,30)
+     .setColorBackground(#061b28)
+     .setColorForeground(#ff8c19)
+     ;
+  
+}
+
+public void controlEvent(ControlEvent theEvent) {
+  println(theEvent.getController().getName());
+}
+
+// function colorA will receive changes from 
+// controller with name colorA
+public void colorA(int theValue) {
+  println("a button event from colorA: "+theValue);
 }
 
 void mouseReleased() {
@@ -62,45 +81,18 @@ void mousePressed() {
     }
   }
   
-  if(overOptions) {
-    println("clicked options"); 
-  }
-}
-
-void glyphOptionsButton() {
-  noStroke(); 
-  if(overOptions) {
-    fill(#536c7b); 
-  }
-  else {
-    fill(#061b28); 
-  }
-  rect(glyphOptionsX, glyphOptionsY, glyphOptionsW, glyphOptionsH, 5);
-  fill(#f0f0f0); 
-  text("Glyph Options", width-102, height*0.85+70, 120, 55);
 }
 
 void draw() {
-  update(mouseX, mouseY); 
   background(bgcol); 
   fill(255); 
-  text("Dataset: " + dataset, 30, 30);
-  glyphOptionsButton();
+  text("DATASET: " + dataset, 30, 30);
   
   physics.update();
   
   c.showConnections();  
   c.display();
   
-}
-
-void update(float x, float y) {
-  if(overRect(glyphOptionsX, glyphOptionsY, glyphOptionsW, glyphOptionsH)) {
-    overOptions = true;
-  }
-  else {
-    overOptions = false;
-  }
 }
 
 boolean overRect(float x, float y, float w, float h)  { 
