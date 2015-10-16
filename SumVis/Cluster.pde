@@ -35,7 +35,7 @@ class Cluster {
     String[] structures = 
       loadStrings(dataset);
       
-    //processes structures
+    // Processes structures
     for(int i = 0; i < structures.length; i++) {
       // The glyph class is the first symbol in the line
       String glyphclass = (split(structures[i], ' '))[0]; 
@@ -49,10 +49,10 @@ class Cluster {
       
     }
     
+    // Find connections between the glyph structures
     for(int i = 0; i < structures.length; i++) {
       String[] currentStructure = split(structures[i], ' ');
       
-      // loop through node ids contained in current structure
       for(int j = 1; j < currentStructure.length; j++) {
         int node1ID = int(currentStructure[j]);
         
@@ -104,7 +104,7 @@ class Cluster {
       line(c1.x,c1.y,c2.x,c2.y);
     }
   }
-
+/*
   void mouseReleased() {
     for (Glyph g: glyphs) {
       g.setClicked(false); 
@@ -120,7 +120,7 @@ class Cluster {
         break; 
       }
     }
-  }
+  }*/
 
   ArrayList getGlyphs() {
     return glyphs;
