@@ -21,16 +21,19 @@ private String dataset;
 PFont bitfont;
 
 // Clique customization
-int cliqueRoundness = 0;
-float fc_hue = 28.05; 
+int cliqueRoundness = 3;
+float fc_hue = 352; 
+float st_hue = 39;
+float ch_hue = 179;
+float bc_hue = 276; 
 
 void setup() {
   background(bgcol); 
-  colorMode(HSB, 255);
+  colorMode(HSB, 360, 100, 100);
   size(800,800);  
   textSize(15);
   cp5 = new ControlP5(this);
-  pixelDensity(displayDensity());
+  //pixelDensity(displayDensity());
   
   bitfont = createFont("Nintendo-DS-BIOS",20,true); 
   textFont(bitfont); 
@@ -41,10 +44,10 @@ void setup() {
   
   // create graph
   Vec2D center = new Vec2D(width/2,height/2);
-  dataset = "cliqueStarClique_top10ordered.model"; 
+  dataset = "sampleGraph_top10ordered.model"; 
   c = new Cluster(dataset, 200, center);
   
-  smooth(); 
+  //smooth(); 
   rectMode(CENTER); 
   
   // UI stuff
@@ -66,13 +69,13 @@ void setup() {
   
   cp5.addSlider("cliqueRoundness")
      .setPosition(30,100)
-     .setRange(0,4)
+     .setRange(0,7)
      .setLabel("Clique Roundness")
      ;
      
   cp5.addSlider("fc_hue")
      .setPosition(30,130)
-     .setRange(0,255)
+     .setRange(0,360)
      .setLabel("Clique Hue")
      ;
 }
@@ -100,7 +103,7 @@ void mousePressed() {
 
 void draw() {
   background(bgcol); 
-  fill(255); 
+  fill(360); 
   text("DATASET: " + dataset, 30, 30);
   
   physics.update();
