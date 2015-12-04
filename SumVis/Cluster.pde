@@ -1,4 +1,4 @@
-// Code adapted from:
+// Somd code adapted from:
 // The Nature of Code
 // Daniel Shiffman
 // http://natureofcode.com
@@ -9,16 +9,18 @@ class Cluster {
   ArrayList<Glyph> glyphs;
   // A list of all the connected pairs
   ArrayList<VerletParticle2D[]> connections;
+  
+  // largest number of nodes two structures have in common
+  private int maxCommonNodes = 0;
+  private int minCommonNodes = 0;
+  private ArrayList<int[]> springs;   
 
   float diameter;
   
-  //pick top 5 structures
-  //int numStructures = 5;
+  // number of structures to be displayed onscreen
+  int numStructures = 5; 
   
   Vec2D center;
-  
-  private int maxCommonNodes = 0;
-  private ArrayList<float[]> springs;   
 
   // We initialize a Cluster with a number of nodes, a diameter, and centerpoint
   Cluster(String dataset, float d, Vec2D center_) {
@@ -26,7 +28,7 @@ class Cluster {
     // Initialize the ArrayList
     glyphs = new ArrayList();
     connections = new ArrayList<VerletParticle2D[]>();
-    springs = new ArrayList<float[]>(); 
+    springs = new ArrayList<int[]>(); 
 
     // Set the diameter
     diameter = d;
@@ -41,10 +43,6 @@ class Cluster {
   void processStructures(String dataset) {
     String[] structures = 
       loadStrings(dataset);
-
-    // just display all structures; for testing
-    //int numStructures = structures.length;
-    int numStructures = 5; 
       
     // Processes structures
     for(int i = 0; i < numStructures; i++) {
@@ -73,87 +71,103 @@ class Cluster {
       
     }
     
+    // find all the connections!
+    findConnections(structures); 
+    
+    findMinCommon(); 
+    
+    // add all the springs!
+    drawSprings(); 
+    
+  }
+  
+  void findConnections(String[] structures) {
     // Find connections between the glyph structures
     for(int i = 0; i < numStructures; i++) {
       // need to remove commas from string before splitting
+      // individual components of the current structure
       String[] currentStructure = split(structures[i], ' ');
       
-      VerletParticle2D pi = (VerletParticle2D) glyphs.get(i);
       for(int j = 1; j < currentStructure.length; j++) {
         String currID1 = currentStructure[j];
-        int node1ID;
+        String node1ID;
         // check if there's a comma at the end and ignore
         if(currID1.charAt(currID1.length()-1) == ',') {
-          node1ID = int(currID1.substring(0,currID1.length()-1));
+          node1ID = currID1.substring(0,currID1.length()-1);
         }
         else {
-          node1ID = int(currID1); 
+          node1ID = currID1; 
         }
         
         // searching within the structure list
         for(int k = i+1; k < numStructures; k++) {
+          // number of nodes that the current two structures have in common
+          String searchingStructure = structures[k]; 
           
-          String[] otherStructure = split(structures[k], ' ');
-          int commonNodes = 0; 
-          
-          // searching the vertices within the structure
-          for(int l = 1; l < otherStructure.length; l++) {
-            String currID2 = otherStructure[l];
-            int node2ID;
-            // check if there's a comma at the end and ignore
-            if(currID2.charAt(currID2.length()-1) == ',') {
-              node2ID = int(currID2.substring(0,currID2.length()-1));
-            }
-            else {
-              node2ID = int(currID2); 
-            }
-            
-            if(node1ID == node2ID) {
-              commonNodes++; 
-              /*
-              VerletParticle2D pi = (VerletParticle2D) glyphs.get(i);
-              VerletParticle2D pk = (VerletParticle2D) glyphs.get(k);
-              
-              physics.addSpring(new VerletSpring2D(pi,pk,diameter,0.01));
-              VerletParticle2D[] newConnection = { pi, pk };
-              connections.add(newConnection); 
-              
-              break; 
-              */
-            }
+          //println(searchingStructure); 
+          if(searchingStructure.indexOf(node1ID) != -1) { 
+            updateSprings(i,k); 
           }
-          
-          if(commonNodes > maxCommonNodes) {
-            maxCommonNodes = commonNodes; 
-          }
-          
-          if(commonNodes > 0) {
-            float[] newSpring = {(float) i, (float) k, commonNodes}; 
-            springs.add(newSpring); 
-          }
-          
-          
         }
+        
       }
-      
+    }
+  }
+  
+  void findMinCommon() {
+    minCommonNodes = maxCommonNodes; 
+    for(int i = 0; i < springs.size(); i++) {
+      if(springs.get(i)[2] < minCommonNodes) {
+        minCommonNodes = springs.get(i)[2]; 
+      }
+    }
+  }
+  
+  void updateSprings(int structure1, int structure2) {
+    
+    boolean foundPair = false; 
+    for(int i = 0; i < springs.size(); i++) {
+      // if this pair already exists, update the number of common nodes
+      if(springs.get(i)[0] == structure1 && springs.get(i)[1] == structure2) {
+        int numCommonNodes = springs.get(i)[2]; 
+        
+        if(numCommonNodes+1 > maxCommonNodes) {
+          maxCommonNodes = numCommonNodes; 
+        }
+        
+        springs.get(i)[2] = numCommonNodes+1;
+        foundPair = true; 
+        break; 
+      }
     }
     
-    // draw all the springs!
+    if(!foundPair) {
+      int[] newSpring = {structure1,structure2,1};
+      springs.add(newSpring); 
+    }
+    
+  }
+  
+  void drawSprings() {
+    println("num springs: "+springs.size());  
     for(int i = 0; i < springs.size(); i++) {
-      float[] currSpring = springs.get(i); 
+      int[] currSpring = springs.get(i); 
       
-      VerletParticle2D pi = (VerletParticle2D) glyphs.get((int)currSpring[0]);
-      VerletParticle2D pk = (VerletParticle2D) glyphs.get((int)currSpring[1]);
+      VerletParticle2D pi = (VerletParticle2D) glyphs.get(currSpring[0]);
+      VerletParticle2D pk = (VerletParticle2D) glyphs.get(currSpring[1]);
       float springlength; 
       
-      springlength = map(currSpring[2], 0, maxCommonNodes, diameter/3, diameter); 
+      //springlength = map(currSpring[2], minCommonNodes, maxCommonNodes, 10, diameter);
+      if(maxCommonNodes == minCommonNodes) {
+        springlength = diameter; 
+      }
+      else 
+        springlength = map(-currSpring[2], -maxCommonNodes, -minCommonNodes, 10, diameter); 
       
       physics.addSpring(new VerletSpring2D(pi,pk, springlength,0.01));
       VerletParticle2D[] newConnection = { pi, pk };
       connections.add(newConnection); 
     }
-    
-    
   }
 
   void display() {
