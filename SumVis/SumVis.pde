@@ -21,16 +21,24 @@ private String dataset;
 PFont bitfont;
 
 // Clique customization
-int cliqueRoundness = 3;
+int cliqueRoundness = 0;
 float fc_hue = 352; 
 float st_hue = 39;
 float ch_hue = 179;
 float bc_hue = 276; 
 
+// UI handling
+controlP5.Slider[] customization = new controlP5.Slider[2];
+boolean glyphOptionsVisible = false; 
+
+// Number of structures found by VOG
+// Organized as: {Full Cliques, Stars, Chains, Bipartite Cores}
+int[] structuresFound = new int[4]; 
+
 void setup() {
   background(bgcol); 
   colorMode(HSB, 360, 100, 100);
-  size(800,800);  
+  size(700,700);  
   textSize(15);
   cp5 = new ControlP5(this);
   //pixelDensity(displayDensity());
@@ -44,13 +52,87 @@ void setup() {
   
   // create graph
   Vec2D center = new Vec2D(width/2,height/2);
-  dataset = "sampleGraph_top10ordered.model"; 
-  c = new Cluster(dataset, 200, center);
   
-  //smooth(); 
+  String path = dataPath("");
+  File[] files = listFiles(path);
+  for(int i = 0; i < files.length; i++) { 
+    String filename = files[i].getName();
+    
+    if(filename.endsWith(".model")) {
+      dataset = filename; 
+      break; 
+    }
+  }
+  
+  createUI(); 
+  
+  c = new Cluster(dataset, 300, center);
+  
   rectMode(CENTER); 
   
-  // UI stuff
+  smooth(); 
+}
+
+void draw() {
+  background(bgcol); 
+  fill(360); 
+  text("DATASET: " + dataset, 30, 30);
+  
+  physics.update();
+  
+  c.showConnections();  
+  c.display();
+  
+  String foundStructures = "STRUCTURES:\n"; 
+  
+  int numDistinctStructures = 0; 
+  for(int i = 0; i < structuresFound.length; i++) {
+    int structurecount = structuresFound[i];
+    
+    if(structurecount > 0) {
+      foundStructures += structurecount; 
+      numDistinctStructures++; 
+      
+      switch(i) {
+        case 0:
+          foundStructures += "  Full  Clique"; 
+          break;
+         case 1:
+          foundStructures += "  Star"; 
+          break;
+         case 2:
+          foundStructures += "  Chain"; 
+          break;
+         case 3:
+          foundStructures += "  Bipartite  Core"; 
+          break;
+      }
+      
+      if(structurecount > 1) {
+        foundStructures += "s"; 
+      }
+      
+      foundStructures += "\n"; 
+    }
+  }
+  
+  fill(#071722, 200); 
+  noStroke(); 
+  rectMode(CORNERS); 
+  // corners of rectangles
+  float corner1 = width*0.75; 
+  float corner2 =  height-63-25*numDistinctStructures; 
+  float corner3 = width-30; 
+  float corner4 = height-30; 
+  rect(corner1, corner2, corner3, corner4, 3); 
+  
+  fill(360); 
+  text(foundStructures, corner1 + 10, corner2 + 10,corner3-10, corner4-10);
+  
+}
+
+void createUI() {
+  // UI BUTTONS!!
   cp5.addButton("glyphOptions")
      .setLabel("Glyph Options")
      .setPosition(30,50)
@@ -67,16 +149,19 @@ void setup() {
      .setColorForeground(#ff8c19)
      ;
   
-  cp5.addSlider("cliqueRoundness")
+  // UI SLIDERS!!
+  customization[0] = cp5.addSlider("cliqueRoundness")
      .setPosition(30,100)
      .setRange(0,7)
      .setLabel("Clique Roundness")
+     .setVisible(false)
      ;
      
-  cp5.addSlider("fc_hue")
+  customization[1] = cp5.addSlider("fc_hue")
      .setPosition(30,130)
      .setRange(0,360)
      .setLabel("Clique Hue")
+     .setVisible(false)
      ;
 }
 
@@ -101,27 +186,36 @@ void mousePressed() {
   
 }
 
-void draw() {
-  background(bgcol); 
-  fill(360); 
-  text("DATASET: " + dataset, 30, 30);
-  
-  physics.update();
-  
-  c.showConnections();  
-  c.display();
-  
-}
-
 // UI STUFF
-public void controlEvent(ControlEvent theEvent) {
-  //println(theEvent.getController().getName());
-}
-
 public void glyphOptions(int theValue) {
-  println("a button event from glyphOptions: "+theValue);
+  if(glyphOptionsVisible) {
+    for (int i = 0; i < customization.length; i++) {
+      customization[i].hide(); 
+    }
+    glyphOptionsVisible = false; 
+  }
+  
+  else {
+    for (int i = 0; i < customization.length; i++) {
+      customization[i].show(); 
+    }
+    glyphOptionsVisible = true; 
+  }
+  
 }
 
 public void saveScreen(int theValue) {
   saveFrame(); 
+}
+
+//taken from http://processing.org/learning/topics/directorylist.html
+File[] listFiles(String dir) {
+ File file = new File(dir);
+ if (file.isDirectory()) {
+   File[] files = file.listFiles();
+   return files;
+ } else {
+   // If it's not a directory
+   return null;
+ }
 }

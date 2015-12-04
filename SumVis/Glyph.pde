@@ -48,7 +48,7 @@ class Glyph extends VerletParticle2D {
     else if(glyphclass.equals("st")) {
       color st_fill = (color(st_hue,100,100)); 
       fill(st_fill);
-      star(x,y, 15, 25,5); 
+      star(x,y, size*0.5, size*0.8,5); 
     }
     /* Chains are represented as rectangles */
     else if(glyphclass.equals("ch")) {
@@ -62,7 +62,7 @@ class Glyph extends VerletParticle2D {
       color bc_fill = (color(bc_hue,49,100)); 
       fill(bc_fill);
       rectMode(CENTER); 
-      bc(x,y, 25);
+      bc(x,y, size);
     }
   }
   

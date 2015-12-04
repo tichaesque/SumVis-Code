@@ -16,13 +16,17 @@ class Cluster {
   //int numStructures = 5;
   
   Vec2D center;
+  
+  private int maxCommonNodes = 0;
+  private ArrayList<float[]> springs;   
 
   // We initialize a Cluster with a number of nodes, a diameter, and centerpoint
   Cluster(String dataset, float d, Vec2D center_) {
 
     // Initialize the ArrayList
     glyphs = new ArrayList();
-    connections = new ArrayList<VerletParticle2D[]>(); 
+    connections = new ArrayList<VerletParticle2D[]>();
+    springs = new ArrayList<float[]>(); 
 
     // Set the diameter
     diameter = d;
@@ -39,7 +43,8 @@ class Cluster {
       loadStrings(dataset);
 
     // just display all structures; for testing
-    int numStructures = structures.length;
+    //int numStructures = structures.length;
+    int numStructures = 5; 
       
     // Processes structures
     for(int i = 0; i < numStructures; i++) {
@@ -48,10 +53,23 @@ class Cluster {
       /* NEED TO ADD
         - size scaling (proportional to the number of nodes in the structure)
       */
-      float size = 30f; 
+      float size = 40f; 
       
       Glyph g = new Glyph(center.add(Vec2D.randomVector()), size, glyphclass);
       glyphs.add(g); 
+      
+      if(glyphclass.equals("fc")) {
+        structuresFound[0]++; 
+      }
+      else if(glyphclass.equals("st")) {
+        structuresFound[1]++; 
+      }
+      else if(glyphclass.equals("ch")) {
+        structuresFound[2]++; 
+      }
+      else if(glyphclass.equals("bc")) {
+        structuresFound[3]++; 
+      }
       
     }
     
@@ -59,7 +77,8 @@ class Cluster {
     for(int i = 0; i < numStructures; i++) {
       // need to remove commas from string before splitting
       String[] currentStructure = split(structures[i], ' ');
-      println("current structure: " + currentStructure[0]); 
+      
+      VerletParticle2D pi = (VerletParticle2D) glyphs.get(i);
       for(int j = 1; j < currentStructure.length; j++) {
         String currID1 = currentStructure[j];
         int node1ID;
@@ -71,11 +90,13 @@ class Cluster {
           node1ID = int(currID1); 
         }
         
+        // searching within the structure list
         for(int k = i+1; k < numStructures; k++) {
           
           String[] otherStructure = split(structures[k], ' ');
+          int commonNodes = 0; 
           
-          
+          // searching the vertices within the structure
           for(int l = 1; l < otherStructure.length; l++) {
             String currID2 = otherStructure[l];
             int node2ID;
@@ -87,28 +108,51 @@ class Cluster {
               node2ID = int(currID2); 
             }
             
-            //int node2ID = int(otherStructure[l]);
-            println("node1ID: " + node1ID + "; otherStructure[" + l + "] ID: " + node2ID);
-            
             if(node1ID == node2ID) {
-              println("found match"); 
+              commonNodes++; 
+              /*
               VerletParticle2D pi = (VerletParticle2D) glyphs.get(i);
               VerletParticle2D pk = (VerletParticle2D) glyphs.get(k);
               
-              float springiness = random(0.002,0.03); 
-              //0.01
               physics.addSpring(new VerletSpring2D(pi,pk,diameter,0.01));
               VerletParticle2D[] newConnection = { pi, pk };
               connections.add(newConnection); 
               
               break; 
+              */
             }
           }
+          
+          if(commonNodes > maxCommonNodes) {
+            maxCommonNodes = commonNodes; 
+          }
+          
+          if(commonNodes > 0) {
+            float[] newSpring = {(float) i, (float) k, commonNodes}; 
+            springs.add(newSpring); 
+          }
+          
           
         }
       }
       
     }
+    
+    // draw all the springs!
+    for(int i = 0; i < springs.size(); i++) {
+      float[] currSpring = springs.get(i); 
+      
+      VerletParticle2D pi = (VerletParticle2D) glyphs.get((int)currSpring[0]);
+      VerletParticle2D pk = (VerletParticle2D) glyphs.get((int)currSpring[1]);
+      float springlength; 
+      
+      springlength = map(currSpring[2], 0, maxCommonNodes, diameter/3, diameter); 
+      
+      physics.addSpring(new VerletSpring2D(pi,pk, springlength,0.01));
+      VerletParticle2D[] newConnection = { pi, pk };
+      connections.add(newConnection); 
+    }
+    
     
   }
 
