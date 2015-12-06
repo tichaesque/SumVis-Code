@@ -43,17 +43,37 @@ class Cluster {
   void processStructures(String dataset) {
     String[] structures = 
       loadStrings(dataset);
+    
+    int maxGlyphSize = 0; 
+    int minGlyphSize = Integer.MAX_VALUE; 
+    
+    // find min/max glyph size
+    for(int i = 0; i < numStructures; i++) {
+      String[] glyphcomponents = split(structures[i], ' '); 
+      int glyphSize = glyphcomponents.length-1; 
+      
+      if(glyphSize > maxGlyphSize)
+        maxGlyphSize = glyphSize;
+      if(glyphSize < minGlyphSize)
+        minGlyphSize = glyphSize; 
+    }
       
     // Processes structures
     for(int i = 0; i < numStructures; i++) {
       // The glyph class is the first symbol in the line
-      String glyphclass = (split(structures[i], ' '))[0]; 
+      String[] glyphcomponents = split(structures[i], ' '); 
+      String glyphclass = glyphcomponents[0]; 
       /* NEED TO ADD
         - size scaling (proportional to the number of nodes in the structure)
       */
-      float size = 40f; 
+      int glyphSize = glyphcomponents.length-1; 
       
-      Glyph g = new Glyph(center.add(Vec2D.randomVector()), size, glyphclass);
+      float size = 30f;
+      
+      if(maxGlyphSize != minGlyphSize) 
+        size = map(glyphSize, minGlyphSize, maxGlyphSize, 30f, 30f*(1+log(maxGlyphSize/minGlyphSize))); 
+      
+      Glyph g = new Glyph(center.add(Vec2D.randomVector()), size, glyphclass, glyphSize);
       glyphs.add(g); 
       
       if(glyphclass.equals("fc")) {
@@ -104,7 +124,6 @@ class Cluster {
           // number of nodes that the current two structures have in common
           String searchingStructure = structures[k]; 
           
-          //println(searchingStructure); 
           if(searchingStructure.indexOf(node1ID) != -1) { 
             updateSprings(i,k); 
           }
@@ -155,14 +174,11 @@ class Cluster {
       
       VerletParticle2D pi = (VerletParticle2D) glyphs.get(currSpring[0]);
       VerletParticle2D pk = (VerletParticle2D) glyphs.get(currSpring[1]);
-      float springlength; 
+      float springlength = diameter; 
       
-      //springlength = map(currSpring[2], minCommonNodes, maxCommonNodes, 10, diameter);
-      if(maxCommonNodes == minCommonNodes) {
-        springlength = diameter; 
-      }
-      else 
+      if(maxCommonNodes != minCommonNodes) {
         springlength = map(-currSpring[2], -maxCommonNodes, -minCommonNodes, 10, diameter); 
+      }
       
       physics.addSpring(new VerletSpring2D(pi,pk, springlength,0.01));
       VerletParticle2D[] newConnection = { pi, pk };
@@ -181,7 +197,7 @@ class Cluster {
 
   // Draw all the internal connections
   void showConnections() {
-    strokeWeight(3);
+    strokeWeight(1.5);
     stroke(360); 
     
     for (int i = 0; i < connections.size(); i++) {

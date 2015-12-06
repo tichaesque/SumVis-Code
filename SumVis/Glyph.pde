@@ -4,14 +4,16 @@ class Glyph extends VerletParticle2D {
   boolean clicked; 
   float size; 
   String glyphclass; 
+  int glyphSize; 
   
   //private color fc_col = #ffa500; 
   
-  Glyph(Vec2D pos, float size_, String glyphclass_) { 
+  Glyph(Vec2D pos, float size_, String glyphclass_, int glyphSize_) { 
     super(pos);
     clicked = false; 
     
     size = size_; 
+    glyphSize = glyphSize_; 
 
     glyphclass = glyphclass_;
     
@@ -34,35 +36,54 @@ class Glyph extends VerletParticle2D {
   }
   
   void display() {
-    strokeWeight(4);
-    stroke(360); 
+    //strokeWeight(4);
+    //stroke(360);
+    String glyphName = ""; 
+    if(clicked) {
+      fill(360); 
+      strokeWeight(1.5);
+      stroke(360);
+    }
+    else
+      noStroke(); 
+    
+    float opacity = 360*.6; 
     
     /* Full cliques are represented as squares */
     if(glyphclass.equals("fc")) {
+      glyphName = "Full-Clique"; 
       color fc_fill = (color(fc_hue,66,96)); 
-      fill(fc_fill);
+      fill(fc_fill, opacity);
       rectMode(CENTER); 
       rect(x,y,size,size,cliqueRoundness);
     }
     /* Stars are represented as stars */
     else if(glyphclass.equals("st")) {
+      glyphName = "Star"; 
       color st_fill = (color(st_hue,100,100)); 
-      fill(st_fill);
+      fill(st_fill, opacity);
       star(x,y, size*0.5, size*0.8,5); 
     }
     /* Chains are represented as rectangles */
     else if(glyphclass.equals("ch")) {
+      glyphName = "Chain"; 
       color ch_fill = (color(ch_hue,66,80)); 
-      fill(ch_fill);
+      fill(ch_fill, opacity);
       rectMode(CENTER); 
       rect(x,y,size*2,size,8);
     }
     /* Bipartite cores are represented as bowties */
     else if(glyphclass.equals("bc")) {
+      glyphName = "Bipartite Core"; 
       color bc_fill = (color(bc_hue,49,100)); 
-      fill(bc_fill);
+      fill(bc_fill, opacity);
       rectMode(CENTER); 
       bc(x,y, size);
+    }
+    
+    if(clicked) {
+      fill(360); 
+      text(glyphName + ", size " + glyphSize, x,y-size*0.8); 
     }
   }
   

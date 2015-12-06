@@ -12,7 +12,7 @@ ControlP5 cp5;
 // Reference to physics world
 VerletPhysics2D physics;
 
-color bgcol = #0A2D43; 
+color bgcol = #0e2f44; 
 
 Cluster c; 
 
@@ -134,7 +134,7 @@ void draw() {
 void createUI() {
   // UI BUTTONS!!
   cp5.addButton("glyphOptions")
-     .setLabel("Glyph Options")
+     .setLabel("Customize")
      .setPosition(30,50)
      .setSize(100,30)
      .setColorBackground(#061b28)
