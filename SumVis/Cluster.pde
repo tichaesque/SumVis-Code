@@ -63,9 +63,7 @@ class Cluster {
       // The glyph class is the first symbol in the line
       String[] glyphcomponents = split(structures[i], ' '); 
       String glyphclass = glyphcomponents[0]; 
-      /* NEED TO ADD
-        - size scaling (proportional to the number of nodes in the structure)
-      */
+      
       int glyphSize = glyphcomponents.length-1; 
       
       float size = 30f;
@@ -169,6 +167,7 @@ class Cluster {
   
   void drawSprings() {
     println("num springs: "+springs.size());  
+    
     for(int i = 0; i < springs.size(); i++) {
       int[] currSpring = springs.get(i); 
       
@@ -180,10 +179,13 @@ class Cluster {
         springlength = map(-currSpring[2], -maxCommonNodes, -minCommonNodes, 10, diameter); 
       }
       
+      springlength= 250; 
+      
       physics.addSpring(new VerletSpring2D(pi,pk, springlength,0.01));
       VerletParticle2D[] newConnection = { pi, pk };
       connections.add(newConnection); 
     }
+    println("num connections: "+connections.size()); 
   }
 
   void display() {
@@ -197,18 +199,26 @@ class Cluster {
 
   // Draw all the internal connections
   void showConnections() {
-    strokeWeight(1.5);
-    stroke(360); 
     
     for (int i = 0; i < connections.size(); i++) {
+      int[] currSpring = springs.get(i); 
+      float springweight = map(currSpring[2], minCommonNodes, maxCommonNodes, 5, 30);
+      
       VerletParticle2D c1 = (VerletParticle2D) connections.get(i)[0];
       VerletParticle2D c2 = (VerletParticle2D) connections.get(i)[1];
       
-      line(c1.x,c1.y,c2.x,c2.y);
+      strokeWeight(springweight); 
+      stroke(360,30);
+      
+      line(c1.x, c1.y, c2.x, c2.y); 
+      
     }
   }
 
   ArrayList getGlyphs() {
     return glyphs;
   }
+ 
+
+ 
 }

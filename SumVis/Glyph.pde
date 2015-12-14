@@ -1,16 +1,18 @@
 
 class Glyph extends VerletParticle2D {
   
-  boolean clicked; 
-  float size; 
-  String glyphclass; 
-  int glyphSize; 
+  boolean mouseover; // is the mouse over the glyph?
+  boolean clicked;   // is the glyph clicked on?
+  float size;        // the display size of the glyph
+  String glyphclass; // the type of glyph
+  int glyphSize;     // the number of nodes in the glyph
   
   //private color fc_col = #ffa500; 
   
   Glyph(Vec2D pos, float size_, String glyphclass_, int glyphSize_) { 
     super(pos);
     clicked = false; 
+    mouseover = false; 
     
     size = size_; 
     glyphSize = glyphSize_; 
@@ -20,6 +22,7 @@ class Glyph extends VerletParticle2D {
   }
   
   boolean contains(int x1, int y1) {
+    //mouseover = true; 
     return (x - size/2) <= x1 && x1 <= (x + size/2) &&
             (y - size/2) <= y1 && y1 <= (y + size/2); 
   }
@@ -33,14 +36,13 @@ class Glyph extends VerletParticle2D {
       x = mousex;
       y = mousey; 
     }
+    
+    mouseover = contains(int(mousex),int(mousey)); 
   }
   
   void display() {
-    //strokeWeight(4);
-    //stroke(360);
     String glyphName = ""; 
-    if(clicked) {
-      fill(360); 
+    if(mouseover) {
       strokeWeight(1.5);
       stroke(360);
     }
@@ -81,10 +83,11 @@ class Glyph extends VerletParticle2D {
       bc(x,y, size);
     }
     
-    if(clicked) {
+    if(mouseover) {
       fill(360); 
       text(glyphName + ", size " + glyphSize, x,y-size*0.8); 
     }
+    
   }
   
   void bc(float x, float y, float radius) {
