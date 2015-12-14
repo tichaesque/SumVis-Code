@@ -41,7 +41,7 @@ void setup() {
   size(700,700);  
   textSize(15);
   cp5 = new ControlP5(this);
-  //pixelDensity(displayDensity());
+  pixelDensity(displayDensity());
   
   bitfont = createFont("Nintendo-DS-BIOS",20,true); 
   textFont(bitfont); 
