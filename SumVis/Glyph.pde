@@ -1,8 +1,9 @@
 
 class Glyph extends VerletParticle2D {
   
+  boolean selected;  // was the glyph selected?
   boolean mouseover; // is the mouse over the glyph?
-  boolean clicked;   // is the glyph clicked on?
+  boolean clicked;   // is the glyph clicked on? (used for handling dragging)
   float size;        // the display size of the glyph
   String glyphclass; // the type of glyph
   int glyphSize;     // the number of nodes in the glyph
@@ -13,6 +14,7 @@ class Glyph extends VerletParticle2D {
     super(pos);
     clicked = false; 
     mouseover = false; 
+    selected = false; 
     
     size = size_; 
     glyphSize = glyphSize_; 
@@ -30,6 +32,9 @@ class Glyph extends VerletParticle2D {
   void setClicked(boolean isClicked) {
     clicked = isClicked; 
   }
+  void setSelected(boolean isSelected) {
+    selected = isSelected; 
+  }
   
   void update(float mousex, float mousey) {
     if (clicked) {
@@ -42,7 +47,7 @@ class Glyph extends VerletParticle2D {
   
   void display() {
     String glyphName = ""; 
-    if(mouseover) {
+    if(mouseover || selected) {
       strokeWeight(1.5);
       stroke(360);
     }
@@ -83,7 +88,7 @@ class Glyph extends VerletParticle2D {
       bc(x,y, size);
     }
     
-    if(mouseover) {
+    if(mouseover || selected) {
       fill(360); 
       text(glyphName + ", size " + glyphSize, x,y-size*0.8); 
     }

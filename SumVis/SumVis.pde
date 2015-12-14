@@ -168,6 +168,10 @@ void createUI() {
 void mouseReleased() {
   ArrayList<Glyph> glyphs = c.getGlyphs(); 
   for (Glyph g: glyphs) {
+    if(g.clicked) {
+      g.setSelected(true); 
+    }
+    
     g.setClicked(false); 
   }
 }
@@ -179,9 +183,8 @@ void mousePressed() {
     if(g.contains(mouseX,mouseY)) {
       g.setClicked(true); 
       
-      // only use the first instance
-      break; 
     }
+    g.setSelected(false); 
   }
   
 }
