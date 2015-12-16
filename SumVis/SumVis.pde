@@ -34,11 +34,16 @@ float bc_hue = 276;
 // UI handling
 controlP5.Slider[] customization = new controlP5.Slider[2];
 boolean glyphOptionsVisible = false; 
+
 controlP5.Button expandGlyphButton;
+controlP5.Button returnButton; 
 
 // Number of structures found by VOG
 // Organized as: {Full Cliques, Stars, Chains, Bipartite Cores}
 int[] structuresFound = new int[4]; 
+
+// variable that determine whether we are looking at an expanded glyph
+boolean isExpanded = false; 
 
 void setup() {
   background(bgcol); 
@@ -163,6 +168,15 @@ void createUI() {
      .setColorForeground(#ff8c19)
      .hide(); 
      ;
+     
+  returnButton = cp5.addButton("returnToGraph")
+     .setLabel("Go Back")
+     .setPosition(370,50)
+     .setSize(110,30)
+     .setColorBackground(#061b28)
+     .setColorForeground(#ff8c19)
+     .hide(); 
+     ;
   
   // UI SLIDERS!!
   customization[0] = cp5.addSlider("cliqueRoundness")
@@ -187,7 +201,9 @@ void mouseReleased() {
   for (Glyph g: glyphs) {
     if(g.clicked) {
       g.setSelected(true); 
-      expandGlyphButton.show();
+      
+      if(!isExpanded)
+        expandGlyphButton.show();
       
       foundselected = true; 
     }
@@ -208,6 +224,7 @@ void mousePressed() {
   for (Glyph g: glyphs) {
     if(g.contains(mouseX,mouseY)) {
       g.setClicked(true); 
+      break; 
     }
     
   }
@@ -219,8 +236,6 @@ public void expandGlyph(int theValue) {
   ArrayList<Glyph> glyphs = c.getGlyphs(); 
   for (Glyph g: glyphs) {
     if(g.selected) {
-      //println(g.top5nodes); 
-      
       String glyphEncoding = g.glyphclass;
       
       for(int i = 0; i < g.top5nodes.length; i++) {
@@ -240,6 +255,20 @@ public void expandGlyph(int theValue) {
       break; 
     }
   }
+  
+  isExpanded = true; 
+  returnButton.show();
+  
+}
+
+public void returnToGraph(int theValue) {
+  // the new cluster center
+  Vec2D center = new Vec2D(width/2,height/2);
+  
+  c = new Cluster(dataset, 250, center, true);
+  
+  isExpanded = false; 
+  returnButton.hide();
 }
 
 public void glyphOptions(int theValue) {

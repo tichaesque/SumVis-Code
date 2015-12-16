@@ -14,6 +14,7 @@ class Cluster {
   private int maxCommonNodes = 0;
   private int minCommonNodes = 0;
   private ArrayList<int[]> springs;   
+  
 
   float diameter;
   
@@ -66,6 +67,7 @@ class Cluster {
     if(glyphclass.equals("fc")) {
       println("it's a full clique!"); 
       
+      // indices for nodes are off by one
       for(int i = 1; i < glyphcomponents.length-1; i++) {
         for(int k = i+1; k < glyphcomponents.length; k++) {
           int[] newSpring = {i-1,k-1,1};
@@ -242,6 +244,7 @@ class Cluster {
       VerletParticle2D[] newConnection = { pi, pk };
       connections.add(newConnection); 
     }
+    
   }
 
   void display() {
