@@ -23,7 +23,7 @@ class Cluster {
   Vec2D center;
 
   // We initialize a Cluster with a number of nodes, a diameter, and centerpoint
-  Cluster(String dataset, float d, Vec2D center_) {
+  Cluster(String dataset, float d, Vec2D center_, boolean fullGraph) {
 
     // Initialize the ArrayList
     glyphs = new ArrayList();
@@ -36,8 +36,59 @@ class Cluster {
     center = center_; 
 
     // Create the glyphs
-    processStructures(dataset);
+    // we're drawing the full graph, so we need to process everything!
+    if(fullGraph)
+      processStructures(dataset);
+      
+    // otherwise we're only expanding a glyph, which requires different handling
+    else
+      processSingleStructure(dataset);
+      
    
+  }
+  
+  void processSingleStructure(String dataset) {
+    println("expanding..."); 
+    
+    String[] glyphcomponents = split(dataset, ' ');
+    
+    String glyphclass = glyphcomponents[0]; 
+    
+    for(int i = 1; i < glyphcomponents.length; i++) {
+        
+      // need to copy a garbage array or else bad things will happen
+      int [] blank = {0,0,0,0,0}; 
+      
+      Glyph g = new Glyph(center.add(Vec2D.randomVector()), 30, "none", 0, blank);
+      glyphs.add(g); 
+    }
+    
+    if(glyphclass.equals("fc")) {
+      println("it's a full clique!"); 
+      
+      for(int i = 1; i < glyphcomponents.length-1; i++) {
+        for(int k = i+1; k < glyphcomponents.length; k++) {
+          int[] newSpring = {i-1,k-1,1};
+          springs.add(newSpring); 
+          
+        }
+      }
+      
+    }
+    else if(glyphclass.equals("st")) {
+      println("it's a star!"); 
+      
+      for(int k = 2; k < glyphcomponents.length; k++) {
+        int[] newSpring = {0,k-1,1};
+        springs.add(newSpring); 
+        
+      }
+      
+    }
+    
+    println(springs.size()); 
+    drawSprings(); 
+    
   }
   
   void processStructures(String dataset) {
@@ -61,7 +112,8 @@ class Cluster {
     // Processes structures
     for(int i = 0; i < numStructures; i++) {
       // The glyph class is the first symbol in the line
-      String[] glyphcomponents = split(structures[i], ' '); 
+      String[] glyphcomponents = split(structures[i], ' ');
+      
       String glyphclass = glyphcomponents[0]; 
       
       int glyphSize = glyphcomponents.length-1; 
@@ -69,9 +121,20 @@ class Cluster {
       float size = 30f;
       
       if(maxGlyphSize != minGlyphSize) 
-        size = map(glyphSize, minGlyphSize, maxGlyphSize, 30f, 30f*(1+log(maxGlyphSize/minGlyphSize))); 
+        size = map(glyphSize, minGlyphSize, maxGlyphSize, 30f, 30f*(1+log(maxGlyphSize/minGlyphSize)));
+        
+      // save the structure's components, to be used in the expansion phase
+      int[] top5nodes = new int[5]; 
+      for(int j = 1; j < 6; j++) {
+        // remove comma at the end, if it exists
+        if(glyphcomponents[j].charAt(glyphcomponents[j].length()-1) == ',') {
+          glyphcomponents[j] = glyphcomponents[j].substring(0,glyphcomponents[j].length()-1);
+        }
+        
+        top5nodes[j-1] = int(glyphcomponents[j]); 
+      }
       
-      Glyph g = new Glyph(center.add(Vec2D.randomVector()), size, glyphclass, glyphSize);
+      Glyph g = new Glyph(center.add(Vec2D.randomVector()), size, glyphclass, glyphSize, top5nodes);
       glyphs.add(g); 
       
       if(glyphclass.equals("fc")) {
@@ -107,6 +170,7 @@ class Cluster {
       String[] currentStructure = split(structures[i], ' ');
       
       for(int j = 1; j < currentStructure.length; j++) {
+        // look at IDs within a structure
         String currID1 = currentStructure[j];
         String node1ID;
         // check if there's a comma at the end and ignore
@@ -117,7 +181,9 @@ class Cluster {
           node1ID = currID1; 
         }
         
-        // searching within the structure list
+        // check other structures for whether this ID appears again 
+        // k is the index into the list of structures
+        // it represents which structure we're searching in
         for(int k = i+1; k < numStructures; k++) {
           // number of nodes that the current two structures have in common
           String searchingStructure = structures[k]; 
@@ -141,7 +207,6 @@ class Cluster {
   }
   
   void updateSprings(int structure1, int structure2) {
-    
     boolean foundPair = false; 
     for(int i = 0; i < springs.size(); i++) {
       // if this pair already exists, update the number of common nodes
@@ -166,8 +231,6 @@ class Cluster {
   }
   
   void drawSprings() {
-    println("num springs: "+springs.size());  
-    
     for(int i = 0; i < springs.size(); i++) {
       int[] currSpring = springs.get(i); 
       
@@ -175,17 +238,10 @@ class Cluster {
       VerletParticle2D pk = (VerletParticle2D) glyphs.get(currSpring[1]);
       float springlength = diameter; 
       
-      if(maxCommonNodes != minCommonNodes) {
-        springlength = map(-currSpring[2], -maxCommonNodes, -minCommonNodes, 10, diameter); 
-      }
-      
-      springlength= 250; 
-      
       physics.addSpring(new VerletSpring2D(pi,pk, springlength,0.01));
       VerletParticle2D[] newConnection = { pi, pk };
       connections.add(newConnection); 
     }
-    println("num connections: "+connections.size()); 
   }
 
   void display() {
@@ -202,7 +258,10 @@ class Cluster {
     
     for (int i = 0; i < connections.size(); i++) {
       int[] currSpring = springs.get(i); 
-      float springweight = map(currSpring[2], minCommonNodes, maxCommonNodes, 5, 30);
+      float springweight = 2; 
+      
+      if(minCommonNodes < maxCommonNodes)
+        springweight = map(currSpring[2], minCommonNodes, maxCommonNodes, 5, 30);
       
       VerletParticle2D c1 = (VerletParticle2D) connections.get(i)[0];
       VerletParticle2D c2 = (VerletParticle2D) connections.get(i)[1];

@@ -8,8 +8,9 @@ class Glyph extends VerletParticle2D {
   String glyphclass; // the type of glyph
   int glyphSize;     // the number of nodes in the glyph
   
+  int[] top5nodes;   // the top 5 nodes in the glyph structure
   
-  Glyph(Vec2D pos, float size_, String glyphclass_, int glyphSize_) { 
+  Glyph(Vec2D pos, float size_, String glyphclass_, int glyphSize_, int[] top5nodes_) { 
     super(pos);
     clicked = false; 
     mouseover = false; 
@@ -19,6 +20,9 @@ class Glyph extends VerletParticle2D {
     glyphSize = glyphSize_; 
 
     glyphclass = glyphclass_;
+    
+    top5nodes = new int[5]; 
+    arrayCopy(top5nodes_, top5nodes); 
     
   }
   
@@ -33,6 +37,10 @@ class Glyph extends VerletParticle2D {
   }
   void setSelected(boolean isSelected) {
     selected = isSelected; 
+  }
+  
+  void saveStructureToFile() {
+    //
   }
   
   void update(float mousex, float mousey) {
@@ -85,6 +93,15 @@ class Glyph extends VerletParticle2D {
       fill(bc_fill, opacity);
       rectMode(CENTER); 
       bc(x,y, size);
+    }
+    
+    /* otherwise the "glyph" is just a regular node (used in expansion) */
+    else {
+      glyphName = "Node"; 
+      color bc_fill = (color(bc_hue,49,100)); 
+      fill(bc_fill, opacity);
+      ellipseMode(CENTER); 
+      ellipse(x,y,size,size);
     }
     
     if(mouseover || selected) {

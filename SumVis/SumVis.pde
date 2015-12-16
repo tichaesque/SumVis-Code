@@ -71,7 +71,7 @@ void setup() {
   
   createUI(); 
   
-  c = new Cluster(dataset, 300, center);
+  c = new Cluster(dataset, 250, center, true);
   
   rectMode(CENTER); 
   
@@ -156,9 +156,9 @@ void createUI() {
      ;
      
   expandGlyphButton = cp5.addButton("expandGlyph")
-     .setLabel("Expand")
+     .setLabel("Expand Glyph")
      .setPosition(370,50)
-     .setSize(100,30)
+     .setSize(110,30)
      .setColorBackground(#061b28)
      .setColorForeground(#ff8c19)
      .hide(); 
@@ -182,15 +182,24 @@ void createUI() {
 
 void mouseReleased() {
   ArrayList<Glyph> glyphs = c.getGlyphs(); 
+  boolean foundselected = false; 
+  
   for (Glyph g: glyphs) {
     if(g.clicked) {
       g.setSelected(true); 
       expandGlyphButton.show();
       
+      foundselected = true; 
+    }
+    else {
+      g.setSelected(false); 
     }
     
     g.setClicked(false); 
   }
+  
+  if(!foundselected) 
+    expandGlyphButton.hide();
 }
 
 void mousePressed() {
@@ -201,16 +210,36 @@ void mousePressed() {
       g.setClicked(true); 
     }
     
-    g.setSelected(false); 
   }
-  
-  expandGlyphButton.hide();
   
 }
 
 // UI STUFF
 public void expandGlyph(int theValue) {
-  saveFrame(); 
+  ArrayList<Glyph> glyphs = c.getGlyphs(); 
+  for (Glyph g: glyphs) {
+    if(g.selected) {
+      //println(g.top5nodes); 
+      
+      String glyphEncoding = g.glyphclass;
+      
+      for(int i = 0; i < g.top5nodes.length; i++) {
+        glyphEncoding += " " + g.top5nodes[i]; 
+      }
+      
+      println(glyphEncoding); 
+      
+      // the new cluster center
+      Vec2D center = new Vec2D(width/2,height/2);
+      
+      // it's bad practice to reassign references to allocated objects all the time,
+      // but I can't think of a cleaner way around this 
+      // hopefully the garbage collector is active enough
+      c = new Cluster(glyphEncoding, 200, center, false);
+      
+      break; 
+    }
+  }
 }
 
 public void glyphOptions(int theValue) {
@@ -231,9 +260,7 @@ public void glyphOptions(int theValue) {
 }
 
 public void saveScreen(int theValue) {
-  Vec2D center = new Vec2D(width/2,height/2);
-  
-  e = new Cluster(dataset, 300, center);
+  saveFrame(); 
 }
 
 //taken from http://processing.org/learning/topics/directorylist.html
