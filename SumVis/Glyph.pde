@@ -8,7 +8,6 @@ class Glyph extends VerletParticle2D {
   String glyphclass; // the type of glyph
   int glyphSize;     // the number of nodes in the glyph
   
-  //private color fc_col = #ffa500; 
   
   Glyph(Vec2D pos, float size_, String glyphclass_, int glyphSize_) { 
     super(pos);
@@ -24,7 +23,7 @@ class Glyph extends VerletParticle2D {
   }
   
   boolean contains(int x1, int y1) {
-    //mouseover = true; 
+    
     return (x - size/2) <= x1 && x1 <= (x + size/2) &&
             (y - size/2) <= y1 && y1 <= (y + size/2); 
   }

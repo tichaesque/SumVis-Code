@@ -14,7 +14,11 @@ VerletPhysics2D physics;
 
 color bgcol = #0e2f44; 
 
+// the main cluster
 Cluster c; 
+
+// the cluster for an expanded glyph
+Cluster e; 
 
 private String dataset;
 
@@ -30,6 +34,7 @@ float bc_hue = 276;
 // UI handling
 controlP5.Slider[] customization = new controlP5.Slider[2];
 boolean glyphOptionsVisible = false; 
+controlP5.Button expandGlyphButton;
 
 // Number of structures found by VOG
 // Organized as: {Full Cliques, Stars, Chains, Bipartite Cores}
@@ -83,6 +88,7 @@ void draw() {
   c.showConnections();  
   c.display();
   
+  // Text box showing structures found
   String foundStructures = "STRUCTURES:\n"; 
   
   int numDistinctStructures = 0; 
@@ -148,6 +154,15 @@ void createUI() {
      .setColorBackground(#061b28)
      .setColorForeground(#ff8c19)
      ;
+     
+  expandGlyphButton = cp5.addButton("expandGlyph")
+     .setLabel("Expand")
+     .setPosition(370,50)
+     .setSize(100,30)
+     .setColorBackground(#061b28)
+     .setColorForeground(#ff8c19)
+     .hide(); 
+     ;
   
   // UI SLIDERS!!
   customization[0] = cp5.addSlider("cliqueRoundness")
@@ -170,6 +185,8 @@ void mouseReleased() {
   for (Glyph g: glyphs) {
     if(g.clicked) {
       g.setSelected(true); 
+      expandGlyphButton.show();
+      
     }
     
     g.setClicked(false); 
@@ -182,14 +199,20 @@ void mousePressed() {
   for (Glyph g: glyphs) {
     if(g.contains(mouseX,mouseY)) {
       g.setClicked(true); 
-      
     }
+    
     g.setSelected(false); 
   }
+  
+  expandGlyphButton.hide();
   
 }
 
 // UI STUFF
+public void expandGlyph(int theValue) {
+  saveFrame(); 
+}
+
 public void glyphOptions(int theValue) {
   if(glyphOptionsVisible) {
     for (int i = 0; i < customization.length; i++) {
@@ -208,7 +231,9 @@ public void glyphOptions(int theValue) {
 }
 
 public void saveScreen(int theValue) {
-  saveFrame(); 
+  Vec2D center = new Vec2D(width/2,height/2);
+  
+  e = new Cluster(dataset, 300, center);
 }
 
 //taken from http://processing.org/learning/topics/directorylist.html
