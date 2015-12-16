@@ -92,39 +92,46 @@ void draw() {
   
   c.showConnections();  
   c.display();
+  String foundStructures; 
+  int numDistinctStructures = 0; 
   
   // Text box showing structures found
-  String foundStructures = "STRUCTURES:\n"; 
-  
-  int numDistinctStructures = 0; 
-  for(int i = 0; i < structuresFound.length; i++) {
-    int structurecount = structuresFound[i];
+  if(!isExpanded) {
+    foundStructures = "STRUCTURES:\n"; 
     
-    if(structurecount > 0) {
-      foundStructures += structurecount; 
-      numDistinctStructures++; 
+    for(int i = 0; i < structuresFound.length; i++) {
+      int structurecount = structuresFound[i];
       
-      switch(i) {
-        case 0:
-          foundStructures += "  Full  Clique"; 
-          break;
-         case 1:
-          foundStructures += "  Star"; 
-          break;
-         case 2:
-          foundStructures += "  Chain"; 
-          break;
-         case 3:
-          foundStructures += "  Bipartite  Core"; 
-          break;
+      if(structurecount > 0) {
+        foundStructures += structurecount; 
+        numDistinctStructures++; 
+        
+        switch(i) {
+          case 0:
+            foundStructures += "  Full  Clique"; 
+            break;
+           case 1:
+            foundStructures += "  Star"; 
+            break;
+           case 2:
+            foundStructures += "  Chain"; 
+            break;
+           case 3:
+            foundStructures += "  Bipartite  Core"; 
+            break;
+        }
+        
+        if(structurecount > 1) {
+          foundStructures += "s"; 
+        }
+        
+        foundStructures += "\n"; 
       }
-      
-      if(structurecount > 1) {
-        foundStructures += "s"; 
-      }
-      
-      foundStructures += "\n"; 
     }
+  }
+  else {
+    foundStructures = "Showing top 5 nodes in the expanded structure."; 
+    numDistinctStructures = 2; 
   }
   
   fill(#071722, 200); 

@@ -57,10 +57,10 @@ class Cluster {
     
     for(int i = 1; i < glyphcomponents.length; i++) {
         
-      // need to copy a garbage array or else bad things will happen
-      int [] blank = {0,0,0,0,0}; 
+      // special dummy array used in expansion
+      int [] blank = {-1, -1,-1,-1,-1}; 
       
-      Glyph g = new Glyph(center.add(Vec2D.randomVector()), 30, "none", 0, blank);
+      Glyph g = new Glyph(center.add(Vec2D.randomVector()), 30, "none", int(glyphcomponents[i]), blank);
       glyphs.add(g); 
     }
     

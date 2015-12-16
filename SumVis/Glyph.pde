@@ -106,7 +106,14 @@ class Glyph extends VerletParticle2D {
     
     if(mouseover || selected) {
       fill(360); 
-      text(glyphName + ", size " + glyphSize, x,y-size*0.8); 
+      
+      // normal mode: show the size of the glyphs
+      if(top5nodes[0] != -1)
+        text(glyphName + ", size " + glyphSize, x,y-size*0.8); 
+        
+      // expanded mode: show the node IDs
+      else
+        text(glyphName + " ID: " + glyphSize, x,y-size*0.8); 
     }
     
   }
