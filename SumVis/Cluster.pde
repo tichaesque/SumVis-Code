@@ -1,4 +1,4 @@
-// Somd code adapted from:
+// Some code adapted from:
 // The Nature of Code
 // Daniel Shiffman
 // http://natureofcode.com
@@ -25,7 +25,11 @@ class Cluster {
 
   // We initialize a Cluster with a number of nodes, a diameter, and centerpoint
   Cluster(String dataset, float d, Vec2D center_, boolean fullGraph) {
-
+    // Initialize structuresFound
+    for(int i = 0; i < structuresFound.length; i++) {
+      structuresFound[i] = 0; 
+    }
+  
     // Initialize the ArrayList
     glyphs = new ArrayList();
     connections = new ArrayList<VerletParticle2D[]>();
@@ -44,8 +48,7 @@ class Cluster {
     // otherwise we're only expanding a glyph, which requires different handling
     else
       processSingleStructure(dataset);
-      
-   
+    
   }
   
   void processSingleStructure(String dataset) {
@@ -269,8 +272,15 @@ class Cluster {
       VerletParticle2D c1 = (VerletParticle2D) connections.get(i)[0];
       VerletParticle2D c2 = (VerletParticle2D) connections.get(i)[1];
       
-      strokeWeight(springweight); 
-      stroke(360,30);
+      if(!isExpanded) {
+        strokeWeight(springweight); 
+        stroke(360,30);
+      }
+      
+      if(isExpanded) {
+        strokeWeight(1); 
+        stroke(360);
+      }
       
       line(c1.x, c1.y, c2.x, c2.y); 
       

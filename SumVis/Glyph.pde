@@ -39,10 +39,6 @@ class Glyph extends VerletParticle2D {
     selected = isSelected; 
   }
   
-  void saveStructureToFile() {
-    //
-  }
-  
   void update(float mousex, float mousey) {
     if (clicked) {
       x = mousex;
@@ -55,13 +51,13 @@ class Glyph extends VerletParticle2D {
   void display() {
     String glyphName = ""; 
     if(mouseover || selected) {
-      strokeWeight(1.5);
+      strokeWeight(2);
       stroke(360);
     }
     else
       noStroke(); 
     
-    float opacity = 360*.6; 
+    float opacity = 360; 
     
     /* Full cliques are represented as squares */
     if(glyphclass.equals("fc")) {
@@ -98,8 +94,8 @@ class Glyph extends VerletParticle2D {
     /* otherwise the "glyph" is just a regular node (used in expansion) */
     else {
       glyphName = "Node"; 
-      color bc_fill = (color(bc_hue,49,100)); 
-      fill(bc_fill, opacity);
+      color node_fill = (color(node_hue,49,100)); 
+      fill(node_fill, opacity);
       ellipseMode(CENTER); 
       ellipse(x,y,size,size);
     }

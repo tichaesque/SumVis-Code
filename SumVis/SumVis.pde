@@ -30,6 +30,7 @@ float fc_hue = 352;
 float st_hue = 39;
 float ch_hue = 179;
 float bc_hue = 276; 
+float node_hue = 87.27;
 
 // UI handling
 controlP5.Slider[] customization = new controlP5.Slider[2];
@@ -269,6 +270,7 @@ public void expandGlyph(int theValue) {
 }
 
 public void returnToGraph(int theValue) {
+  
   // the new cluster center
   Vec2D center = new Vec2D(width/2,height/2);
   
