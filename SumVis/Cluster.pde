@@ -18,7 +18,7 @@ class Cluster {
 
   float diameter;
   
-  // number of structures to be displayed onscreen
+  // number to be displayed onscreen
   int numStructures = 5; 
   
   Vec2D center;
@@ -170,12 +170,12 @@ class Cluster {
   
   void findConnections(String[] structures) {
     // Find connections between the glyph structures
-    //CHANGE THIS
     for(int i = structureFilePos; i < structureFilePos+numStructures; i++) {
       // need to remove commas from string before splitting
       // individual components of the current structure
       String[] currentStructure = split(structures[i], ' ');
       
+      // start from 1 because we're skipping over the structure name
       for(int j = 1; j < currentStructure.length; j++) {
         // look at IDs within a structure
         String currID1 = currentStructure[j];
@@ -193,11 +193,26 @@ class Cluster {
         // it represents which structure we're searching in
         for(int k = i+1; k < structureFilePos+numStructures; k++) {
           // number of nodes that the current two structures have in common
-          String searchingStructure = structures[k]; 
+          //String searchingStructure = structures[k];
+          String[] searchingStructure = split(structures[k], ' ');
           
+          for(int l = 0; l < searchingStructure.length; l++) {
+            String currnodeID = searchingStructure[l]; 
+            if(currnodeID.charAt(currnodeID.length()-1) == ',') {
+              searchingStructure[l] = currnodeID.substring(0,currnodeID.length()-1);
+            }
+            
+            if(node1ID.equals(searchingStructure[l])) {
+              updateSprings(i - structureFilePos,k - structureFilePos); 
+              break; 
+            }
+            
+          }
+          
+          /*
           if(searchingStructure.indexOf(node1ID) != -1) { 
             updateSprings(i - structureFilePos,k - structureFilePos); 
-          }
+          }*/
         }
         
       }
