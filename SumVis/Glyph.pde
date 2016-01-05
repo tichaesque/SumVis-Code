@@ -90,6 +90,14 @@ class Glyph extends VerletParticle2D {
       rectMode(CENTER); 
       bc(x,y, size);
     }
+    /* Near-bipartite cores are represented as bowties, but pink */
+    else if(glyphclass.equals("nb")) {
+      glyphName = "Near-Bipartite Core"; 
+      color bc_fill = (color(bc_hue,100,100)); 
+      fill(bc_fill, opacity);
+      rectMode(CENTER); 
+      bc(x,y, size);
+    }
     
     /* otherwise the "glyph" is just a regular node (used in expansion) */
     else {

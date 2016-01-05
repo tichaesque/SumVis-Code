@@ -39,12 +39,19 @@ boolean glyphOptionsVisible = false;
 controlP5.Button expandGlyphButton;
 controlP5.Button returnButton; 
 
-// Number of structures found by VOG
-// Organized as: {Full Cliques, Stars, Chains, Bipartite Cores}
-int[] structuresFound = new int[4]; 
+// Distinct structures found by VOG 
+// (used by the displayed list in the bottom-right hand corner)
+// Organized as: {Full Cliques, Stars, Chains, Bipartite Cores, Near-Bipartite Cores}
+int[] structuresFound = new int[5]; 
 
 // variable that determine whether we are looking at an expanded glyph
 boolean isExpanded = false; 
+
+// index that keeps track of where we are in the structure file
+int structureFilePos = 0; 
+int newStructureFilePos = 0; 
+
+int datasetlen; 
 
 void setup() {
   background(bgcol); 
@@ -69,16 +76,18 @@ void setup() {
   for(int i = 0; i < files.length; i++) { 
     String filename = files[i].getName();
     
+    // use the first model file that is found in the data directory as input
     if(filename.endsWith(".model")) {
       dataset = filename; 
       break; 
     }
   }
   
-  createUI(); 
-  
   c = new Cluster(dataset, 250, center, true);
   
+  datasetlen = loadStrings(dataset).length; 
+  
+  createUI(); 
   rectMode(CENTER); 
   
   smooth(); 
@@ -96,9 +105,14 @@ void draw() {
   String foundStructures; 
   int numDistinctStructures = 0; 
   
+  if(newStructureFilePos != structureFilePos) {
+    structureFilePos = newStructureFilePos; 
+    returnToGraph();
+  }
+  
   // Text box showing structures found
   if(!isExpanded) {
-    foundStructures = "STRUCTURES:\n"; 
+    foundStructures = "STRUCTURES FOUND:\n"; 
     
     for(int i = 0; i < structuresFound.length; i++) {
       int structurecount = structuresFound[i];
@@ -120,6 +134,9 @@ void draw() {
            case 3:
             foundStructures += "  Bipartite  Core"; 
             break;
+           case 4:
+            foundStructures += "  Near-Bipartite  Core"; 
+            break;
         }
         
         if(structurecount > 1) {
@@ -139,19 +156,22 @@ void draw() {
   noStroke(); 
   rectMode(CORNERS); 
   // corners of rectangles
-  float corner1 = width*0.75; 
-  float corner2 =  height-63-25*numDistinctStructures; 
-  float corner3 = width-30; 
-  float corner4 = height-30; 
-  rect(corner1, corner2, corner3, corner4, 3); 
+  float upperleftcorner_x = width*0.7; 
+  float upperleftcorner_y =  height-63-25*numDistinctStructures; 
+  float bottomrightcorner_x = width-30; 
+  float bottomrightcorner_y = height-30; 
+  rect(upperleftcorner_x, upperleftcorner_y, bottomrightcorner_x, bottomrightcorner_y, 3); 
   
   fill(360); 
-  text(foundStructures, corner1 + 10, corner2 + 10,corner3-10, corner4-10);
+  text(foundStructures, 
+        upperleftcorner_x + 10, upperleftcorner_y + 10,
+        bottomrightcorner_x-10, bottomrightcorner_y-10);
   
 }
 
 void createUI() {
   // UI BUTTONS!!
+  /*
   cp5.addButton("glyphOptions")
      .setLabel("Customize")
      .setPosition(30,50)
@@ -159,10 +179,10 @@ void createUI() {
      .setColorBackground(#061b28)
      .setColorForeground(#ff8c19)
      ;
-     
+     */
   cp5.addButton("saveScreen")
      .setLabel("Save Screen")
-     .setPosition(200,50)
+     .setPosition(180,50)
      .setSize(100,30)
      .setColorBackground(#061b28)
      .setColorForeground(#ff8c19)
@@ -170,13 +190,29 @@ void createUI() {
      
   expandGlyphButton = cp5.addButton("expandGlyph")
      .setLabel("Expand Glyph")
-     .setPosition(370,50)
+     .setPosition(330,50)
      .setSize(110,30)
      .setColorBackground(#061b28)
      .setColorForeground(#ff8c19)
      .hide(); 
      ;
+  /*
+  cp5.addButton("previous5")
+     .setLabel("<")
+     .setPosition(550,50)
+     .setSize(30,30)
+     .setColorBackground(#061b28)
+     .setColorForeground(#ff8c19)
+     ;
      
+  cp5.addButton("next5")
+     .setLabel(">")
+     .setPosition(600,50)
+     .setSize(30,30)
+     .setColorBackground(#061b28)
+     .setColorForeground(#ff8c19)
+     ;
+  */
   returnButton = cp5.addButton("returnToGraph")
      .setLabel("Go Back")
      .setPosition(370,50)
@@ -184,6 +220,13 @@ void createUI() {
      .setColorBackground(#061b28)
      .setColorForeground(#ff8c19)
      .hide(); 
+     ;
+  
+  // Position in file slider
+  cp5.addSlider("newStructureFilePos")
+     .setPosition(30,620)
+     .setRange(0, datasetlen-5)
+     .setLabel("Position in file")
      ;
   
   // UI SLIDERS!!
@@ -255,9 +298,9 @@ public void expandGlyph(int theValue) {
       // the new cluster center
       Vec2D center = new Vec2D(width/2,height/2);
       
-      // it's bad practice to reassign references to allocated objects all the time,
-      // but I can't think of a cleaner way around this 
-      // hopefully the garbage collector is active enough
+      // Note: it's bad practice to reassign references to allocated objects all the time,
+      // but I can't think of a cleaner way around this--
+      // hopefully the garbage collector is active enough to take care of things
       c = new Cluster(glyphEncoding, 200, center, false);
       
       break; 
@@ -269,8 +312,7 @@ public void expandGlyph(int theValue) {
   
 }
 
-public void returnToGraph(int theValue) {
-  
+public void returnToGraph() {
   // the new cluster center
   Vec2D center = new Vec2D(width/2,height/2);
   
@@ -278,6 +320,36 @@ public void returnToGraph(int theValue) {
   
   isExpanded = false; 
   returnButton.hide();
+}
+
+public void next5(int theValue) {
+  
+  // ADJUST THIS TO LENGTH OF THE FILE
+  if(structureFilePos < datasetlen-5) {
+    structureFilePos++; 
+    
+    // the new cluster center
+    Vec2D center = new Vec2D(width/2,height/2);
+    
+    c = new Cluster(dataset, 250, center, true);
+    
+    isExpanded = false; 
+    returnButton.hide();
+  }
+}
+
+public void previous5(int theValue) {
+  if(structureFilePos > 0) {
+    structureFilePos--; 
+    
+    // the new cluster center
+    Vec2D center = new Vec2D(width/2,height/2);
+    
+    c = new Cluster(dataset, 250, center, true);
+    
+    isExpanded = false; 
+    returnButton.hide();
+  }
 }
 
 public void glyphOptions(int theValue) {

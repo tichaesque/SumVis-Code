@@ -68,8 +68,6 @@ class Cluster {
     }
     
     if(glyphclass.equals("fc")) {
-      println("it's a full clique!"); 
-      
       // indices for nodes are off by one
       for(int i = 1; i < glyphcomponents.length-1; i++) {
         for(int k = i+1; k < glyphcomponents.length; k++) {
@@ -81,8 +79,6 @@ class Cluster {
       
     }
     else if(glyphclass.equals("st")) {
-      println("it's a star!"); 
-      
       for(int k = 2; k < glyphcomponents.length; k++) {
         int[] newSpring = {0,k-1,1};
         springs.add(newSpring); 
@@ -104,7 +100,8 @@ class Cluster {
     int minGlyphSize = Integer.MAX_VALUE; 
     
     // find min/max glyph size
-    for(int i = 0; i < numStructures; i++) {
+    for(int i = structureFilePos; i < structureFilePos+numStructures; i++) {
+      
       String[] glyphcomponents = split(structures[i], ' '); 
       int glyphSize = glyphcomponents.length-1; 
       
@@ -113,9 +110,10 @@ class Cluster {
       if(glyphSize < minGlyphSize)
         minGlyphSize = glyphSize; 
     }
-      
+    
+    
     // Processes structures
-    for(int i = 0; i < numStructures; i++) {
+    for(int i = structureFilePos; i < structureFilePos+numStructures; i++) {
       // The glyph class is the first symbol in the line
       String[] glyphcomponents = split(structures[i], ' ');
       
@@ -154,6 +152,9 @@ class Cluster {
       else if(glyphclass.equals("bc")) {
         structuresFound[3]++; 
       }
+      else if(glyphclass.equals("nb")) {
+        structuresFound[4]++; 
+      }
       
     }
     
@@ -169,7 +170,8 @@ class Cluster {
   
   void findConnections(String[] structures) {
     // Find connections between the glyph structures
-    for(int i = 0; i < numStructures; i++) {
+    //CHANGE THIS
+    for(int i = structureFilePos; i < structureFilePos+numStructures; i++) {
       // need to remove commas from string before splitting
       // individual components of the current structure
       String[] currentStructure = split(structures[i], ' ');
@@ -189,12 +191,12 @@ class Cluster {
         // check other structures for whether this ID appears again 
         // k is the index into the list of structures
         // it represents which structure we're searching in
-        for(int k = i+1; k < numStructures; k++) {
+        for(int k = i+1; k < structureFilePos+numStructures; k++) {
           // number of nodes that the current two structures have in common
           String searchingStructure = structures[k]; 
           
           if(searchingStructure.indexOf(node1ID) != -1) { 
-            updateSprings(i,k); 
+            updateSprings(i - structureFilePos,k - structureFilePos); 
           }
         }
         
