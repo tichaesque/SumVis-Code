@@ -13,6 +13,8 @@ class Cluster {
   // largest number of nodes two structures have in common
   private int maxCommonNodes = 0;
   private int minCommonNodes = 0;
+  
+  // springs stored as {glyph1ID, glyph2ID, # of connections}
   private ArrayList<int[]> springs;   
   
 
@@ -96,11 +98,14 @@ class Cluster {
     String[] structures = 
       loadStrings(dataset);
     
+    int totalstructures = structures.length; 
+    
     int maxGlyphSize = 0; 
     int minGlyphSize = Integer.MAX_VALUE; 
     
     // find min/max glyph size
     for(int i = structureFilePos; i < structureFilePos+numStructures; i++) {
+      if(i >= totalstructures) break; 
       
       String[] glyphcomponents = split(structures[i], ' '); 
       int glyphSize = glyphcomponents.length-1; 
@@ -114,6 +119,8 @@ class Cluster {
     
     // Processes structures
     for(int i = structureFilePos; i < structureFilePos+numStructures; i++) {
+      if(i >= totalstructures) break; 
+      
       // The glyph class is the first symbol in the line
       String[] glyphcomponents = split(structures[i], ' ');
       
@@ -209,10 +216,6 @@ class Cluster {
             
           }
           
-          /*
-          if(searchingStructure.indexOf(node1ID) != -1) { 
-            updateSprings(i - structureFilePos,k - structureFilePos); 
-          }*/
         }
         
       }
@@ -263,6 +266,7 @@ class Cluster {
       physics.addSpring(new VerletSpring2D(pi,pk, springlength,0.01));
       VerletParticle2D[] newConnection = { pi, pk };
       connections.add(newConnection); 
+      
     }
     
   }
@@ -278,13 +282,12 @@ class Cluster {
 
   // Draw all the internal connections
   void showConnections() {
-    
     for (int i = 0; i < connections.size(); i++) {
       int[] currSpring = springs.get(i); 
       float springweight = 2; 
       
       if(minCommonNodes < maxCommonNodes)
-        springweight = map(currSpring[2], minCommonNodes, maxCommonNodes, 5, 30);
+        springweight = map(currSpring[2], minCommonNodes, maxCommonNodes, 10f, 10f*(1+log(maxCommonNodes/minCommonNodes)));
       
       VerletParticle2D c1 = (VerletParticle2D) connections.get(i)[0];
       VerletParticle2D c2 = (VerletParticle2D) connections.get(i)[1];
