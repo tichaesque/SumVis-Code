@@ -63,9 +63,9 @@ class Glyph extends VerletParticle2D {
     }
     
     if(!spyplotted && selected) { 
-        plotHelper(true);
-        spyplotted = true; 
-      }
+      plotHelper(true);
+      spyplotted = true; 
+    }
     if(spyplotted && !selected) {
       plotHelper(false);
       spyplotted = false; 

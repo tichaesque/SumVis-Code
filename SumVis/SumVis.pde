@@ -141,6 +141,11 @@ void makeVisualization() {
   int numDistinctStructures = 0; 
   
   if(newStructureFilePos != structureFilePos) {
+    for(int i = 0; i < plotsize; i++) {
+      for(int j = 0; j < plotsize; j++) {
+        SpyPlot[i][j].selected = false; 
+      }
+    }
     structureFilePos = newStructureFilePos; 
     returnToGraph();
   }
@@ -216,9 +221,6 @@ void prepareSpyPlot() {
       break; 
     }
   }
-  
-  //TESTING ONLY
-  //spyplotdata = "hamster2.out"; 
   
   // put the full data into an array
   String[] inputGraph = loadStrings(spyplotdata); 
