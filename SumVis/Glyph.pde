@@ -1,20 +1,22 @@
 
 class Glyph extends VerletParticle2D {
-  
-  boolean selected;  // was the glyph selected?
+  boolean spyplotted;// was the glyph highlighted in the spyplot? (after selection)  
+  boolean selected;  // was the glyph selected? (used for expansion)
   boolean mouseover; // is the mouse over the glyph?
   boolean clicked;   // is the glyph clicked on? (used for handling dragging)
   float size;        // the display size of the glyph
   String glyphclass; // the type of glyph
   int glyphSize;     // the number of nodes in the glyph
   
-  int[] top5nodes;   // the top 5 nodes in the glyph structure
+  int[] top5nodes;   // the top 5 nodes in the glyph structure DELETE LATER
+  int[] allnodes;   // all the nodes in the glyph structure
   
-  Glyph(Vec2D pos, float size_, String glyphclass_, int glyphSize_, int[] top5nodes_) { 
+  Glyph(Vec2D pos, float size_, String glyphclass_, int glyphSize_, int[] top5nodes_, int[] allnodes_) { 
     super(pos);
     clicked = false; 
     mouseover = false; 
     selected = false; 
+    spyplotted = false; 
     
     size = size_; 
     glyphSize = glyphSize_; 
@@ -24,10 +26,11 @@ class Glyph extends VerletParticle2D {
     top5nodes = new int[5]; 
     arrayCopy(top5nodes_, top5nodes); 
     
+    allnodes = new int[glyphSize]; 
+    arrayCopy(allnodes_, allnodes); 
   }
   
   boolean contains(int x1, int y1) {
-    
     return (x - size/2) <= x1 && x1 <= (x + size/2) &&
             (y - size/2) <= y1 && y1 <= (y + size/2); 
   }
@@ -43,6 +46,7 @@ class Glyph extends VerletParticle2D {
     if (clicked) {
       x = mousex;
       y = mousey; 
+      
     }
     
     mouseover = contains(int(mousex),int(mousey)); 
@@ -54,8 +58,9 @@ class Glyph extends VerletParticle2D {
       strokeWeight(2);
       stroke(360);
     }
-    else
-      noStroke(); 
+    else {
+      noStroke();
+    }
     
     float opacity = 360; 
     
@@ -73,6 +78,23 @@ class Glyph extends VerletParticle2D {
       color st_fill = (color(st_hue,100,100)); 
       fill(st_fill, opacity);
       star(x,y, size*0.5, size*0.8,5); 
+      
+      if(!spyplotted && selected) {
+        println("\nminXAxis is: " + minXAxis);
+        println("minYAxis is: " + minYAxis);
+        println("star size is: " + glyphSize);
+        println("spyplot size is: " + plotsize + "x" + plotsize);
+        for(int i = 0; i < glyphSize; i++) {
+          print(allnodes[i] + ","); 
+        }
+        println(allnodes[1]-minXAxis);
+        
+        for(int i = 1; i < glyphSize; i++) {
+            SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].selected = true;
+        }
+        
+        spyplotted = true; 
+      }
     }
     /* Chains are represented as rectangles */
     else if(glyphclass.equals("ch")) {
@@ -118,6 +140,10 @@ class Glyph extends VerletParticle2D {
       // expanded mode: show the node IDs
       else
         text(glyphName + " ID: " + glyphSize, x,y-size*0.8); 
+    }
+    
+    if(spyplotted && !selected) {
+      spyplotted = false; 
     }
     
   }

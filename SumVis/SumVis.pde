@@ -73,6 +73,8 @@ int numrows;
 int numcols; 
 int plotsize; 
 
+int minNodeID;
+
 void setup() {
   background(bgcol); 
   colorMode(HSB, 360, 100, 100);
@@ -234,7 +236,9 @@ void prepareSpyPlot() {
   
   numrows = maxYAxis-minYAxis+1;
   numcols = maxXAxis-minXAxis+1; 
-  plotsize = max(numrows, numcols); 
+  //plotsize = max(numrows, numcols);
+  plotsize = max(maxXAxis, maxYAxis)-min(minXAxis,minYAxis)+1; 
+  minNodeID = min(minXAxis,minYAxis);  
   
   SpyPlot = new PlotPoint[plotsize][plotsize]; 
   
@@ -249,8 +253,10 @@ void prepareSpyPlot() {
   for(int i = 0; i < inputGraph.length; i++) {
     int rowVertex = int(split(inputGraph[i], ',')[0]); 
     int colVertex = int(split(inputGraph[i], ',')[1]);
-    int colVal = colVertex-minXAxis; 
-    int rowVal = rowVertex-minYAxis; 
+    //int colVal = colVertex-minXAxis; 
+    //int rowVal = rowVertex-minYAxis;
+    int colVal = colVertex-minNodeID; 
+    int rowVal = rowVertex-minNodeID;
     
     // add edge in both directions
     SpyPlot[rowVal][colVal].yPos = rowVal;
@@ -265,7 +271,7 @@ void prepareSpyPlot() {
 }
 
 void makeSpyPlot() {
-  fill(360);
+  fill(#f5f5f5);
   rect(0,0,width/2, height);
   
   pushMatrix();
@@ -292,7 +298,7 @@ void createUI() {
      ;
      
   expandGlyphButton = cp5.addButton("expandGlyph")
-     .setLabel("Expand Glyph")
+     .setLabel("Tell Me More")
      .setPosition(930,50)
      .setSize(110,30)
      .setColorBackground(#061b28)
@@ -339,7 +345,12 @@ void createUI() {
 void mouseReleased() {
   ArrayList<Glyph> glyphs = c.getGlyphs(); 
   boolean foundselected = false; 
-  
+  for(int i = 0; i < plotsize; i++) {
+    for(int j = 0; j < plotsize; j++) {
+      SpyPlot[i][j].selected = false;
+    }
+  }
+    
   for (Glyph g: glyphs) {
     if(g.clicked) {
       g.setSelected(true); 
@@ -356,8 +367,10 @@ void mouseReleased() {
     g.setClicked(false); 
   }
   
-  if(!foundselected) 
+  if(!foundselected) {
     expandGlyphButton.hide();
+    
+  }
 }
 
 void mousePressed() {

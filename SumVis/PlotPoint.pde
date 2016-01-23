@@ -1,3 +1,6 @@
+// the display width for the spy plot
+float plotWidth = 400; 
+
 class PlotPoint {
   boolean hasEdge;  // is there an edge between the two points?
   boolean selected; // was the point selected? 
@@ -17,14 +20,14 @@ class PlotPoint {
     
     if(hasEdge) {
       if(selected) {
-        fill(#ff0000); 
+        fill(#db3d3d); 
       }
       else {
-        fill(#0000ff);
+        fill(#cbbeb5);
       }
       
-      float xPosMapped = map(xPos, 0, plotsize-1, 0, 400);
-      float yPosMapped = map(yPos, 0, plotsize-1, 0, 400);
+      float xPosMapped = map(xPos, 0, plotsize-1, 0, plotWidth);
+      float yPosMapped = map(yPos, 0, plotsize-1, 0, plotWidth);
       
       ellipse(xPosMapped,yPosMapped,4,4); 
     }

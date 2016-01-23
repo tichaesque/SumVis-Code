@@ -67,7 +67,7 @@ class Cluster {
         // special dummy array used in expansion
         int [] blank = {-1, -1,-1,-1,-1}; 
         
-        Glyph g = new Glyph(center.add(Vec2D.randomVector()), 30, "none", int(glyphcomponents[i]), blank);
+        Glyph g = new Glyph(center.add(Vec2D.randomVector()), 30, "none", int(glyphcomponents[i]), blank, blank);
         glyphs.add(g); 
       }
     }
@@ -142,8 +142,11 @@ class Cluster {
         size = map(glyphSize, minGlyphSize, maxGlyphSize, 30f, 30f*(1+log(maxGlyphSize/minGlyphSize)));
         
       // save the structure's components, to be used in the expansion phase
-      int[] top5nodes = new int[5]; 
-      for(int j = 1; j < min(6, glyphcomponents.length); j++) {
+      int[] top5nodes = new int[5];
+      int[] allnodes = new int[glyphSize];
+      
+      // copy top 5 nodes DELETE LATER
+      for(int j = 1; j < min(6, glyphSize+1); j++) {
         // remove comma at the end, if it exists
         if(glyphcomponents[j].charAt(glyphcomponents[j].length()-1) == ',') {
           glyphcomponents[j] = glyphcomponents[j].substring(0,glyphcomponents[j].length()-1);
@@ -152,7 +155,17 @@ class Cluster {
         top5nodes[j-1] = int(glyphcomponents[j]); 
       }
       
-      Glyph g = new Glyph(center.add(Vec2D.randomVector()), size, glyphclass, glyphSize, top5nodes);
+      // copy all nodes
+      for(int j = 1; j < glyphSize+1; j++) {
+        // remove comma at the end, if it exists
+        if(glyphcomponents[j].charAt(glyphcomponents[j].length()-1) == ',') {
+          glyphcomponents[j] = glyphcomponents[j].substring(0,glyphcomponents[j].length()-1);
+        }
+        
+        allnodes[j-1] = int(glyphcomponents[j]); 
+      }
+      
+      Glyph g = new Glyph(center.add(Vec2D.randomVector()), size, glyphclass, glyphSize, top5nodes, allnodes);
       glyphs.add(g); 
       
       if(glyphclass.equals("fc")) {
