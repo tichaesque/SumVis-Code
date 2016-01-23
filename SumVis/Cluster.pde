@@ -53,28 +53,33 @@ class Cluster {
     
   }
   
+  // Expanding a glyph
   void processSingleStructure(String dataset) {
-    println("expanding..."); 
     
     String[] glyphcomponents = split(dataset, ' ');
     
     String glyphclass = glyphcomponents[0]; 
     
     for(int i = 1; i < glyphcomponents.length; i++) {
-        
-      // special dummy array used in expansion
-      int [] blank = {-1, -1,-1,-1,-1}; 
       
-      Glyph g = new Glyph(center.add(Vec2D.randomVector()), 30, "none", int(glyphcomponents[i]), blank);
-      glyphs.add(g); 
+      if(int(glyphcomponents[i]) != 0) {
+        
+        // special dummy array used in expansion
+        int [] blank = {-1, -1,-1,-1,-1}; 
+        
+        Glyph g = new Glyph(center.add(Vec2D.randomVector()), 30, "none", int(glyphcomponents[i]), blank);
+        glyphs.add(g); 
+      }
     }
     
     if(glyphclass.equals("fc")) {
       // indices for nodes are off by one
       for(int i = 1; i < glyphcomponents.length-1; i++) {
         for(int k = i+1; k < glyphcomponents.length; k++) {
-          int[] newSpring = {i-1,k-1,1};
-          springs.add(newSpring); 
+          if(int(glyphcomponents[k]) != 0) {
+            int[] newSpring = {i-1,k-1,1};
+            springs.add(newSpring); 
+          }
           
         }
       }
@@ -82,23 +87,26 @@ class Cluster {
     }
     else if(glyphclass.equals("st")) {
       for(int k = 2; k < glyphcomponents.length; k++) {
-        int[] newSpring = {0,k-1,1};
-        springs.add(newSpring); 
-        
+        if(int(glyphcomponents[k]) != 0) {
+          int[] newSpring = {0,k-1,1};
+          springs.add(newSpring); 
+        }
       }
       
     }
     
-    println(springs.size()); 
     drawSprings(); 
     
   }
   
   void processStructures(String dataset) {
-    String[] structures = 
-      loadStrings(dataset);
+    String[] structures = loadStrings(dataset);
     
     int totalstructures = structures.length; 
+    
+    // need to take the minimum of the two values in the case that
+    // the number of structures found by VOG is less than 5
+    numStructures = min(totalstructures,numStructures); 
     
     int maxGlyphSize = 0; 
     int minGlyphSize = Integer.MAX_VALUE; 
@@ -121,9 +129,9 @@ class Cluster {
     for(int i = structureFilePos; i < structureFilePos+numStructures; i++) {
       if(i >= totalstructures) break; 
       
-      // The glyph class is the first symbol in the line
       String[] glyphcomponents = split(structures[i], ' ');
       
+      // The glyph class is the first symbol in the line
       String glyphclass = glyphcomponents[0]; 
       
       int glyphSize = glyphcomponents.length-1; 
@@ -135,7 +143,7 @@ class Cluster {
         
       // save the structure's components, to be used in the expansion phase
       int[] top5nodes = new int[5]; 
-      for(int j = 1; j < 6; j++) {
+      for(int j = 1; j < min(6, glyphcomponents.length); j++) {
         // remove comma at the end, if it exists
         if(glyphcomponents[j].charAt(glyphcomponents[j].length()-1) == ',') {
           glyphcomponents[j] = glyphcomponents[j].substring(0,glyphcomponents[j].length()-1);

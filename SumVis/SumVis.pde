@@ -6,7 +6,9 @@ import toxi.geom.*;
 import toxi.physics2d.*;
 import toxi.physics2d.behaviors.*;
 import controlP5.*;
+import javax.swing.*;
 
+/******* FOR THE MAIN VISUALIZATION *******/
 ControlP5 cp5;
 
 // Reference to physics world
@@ -20,6 +22,7 @@ Cluster c;
 // the cluster for an expanded glyph
 Cluster e; 
 
+// name of the input file for VOG's output
 private String dataset;
 
 PFont bitfont;
@@ -53,10 +56,27 @@ int newStructureFilePos = 0;
 
 int datasetlen; 
 
+/******* FOR THE SPY PLOT *******/
+// the name of the input file used to create the spy plot
+private String spyplotdata; 
+
+// The spy plot, represented as a 2D boolean array.
+// if SpyPlot[u][v] is true, that means there is an edge from u->v
+PlotPoint[][] SpyPlot; 
+
+int minYAxis = Integer.MAX_VALUE; // smallest number on the Y-axis
+int maxYAxis = Integer.MIN_VALUE; // largest number on the Y-axis 
+int minXAxis = Integer.MAX_VALUE; // smallest number on the X-axis
+int maxXAxis = Integer.MIN_VALUE; // largest number on the X-axis 
+
+int numrows; 
+int numcols; 
+int plotsize; 
+
 void setup() {
   background(bgcol); 
   colorMode(HSB, 360, 100, 100);
-  size(700,700);  
+  size(1200,700);  
   textSize(15);
   cp5 = new ControlP5(this);
   pixelDensity(displayDensity());
@@ -64,12 +84,26 @@ void setup() {
   bitfont = createFont("Nintendo-DS-BIOS",20,true); 
   textFont(bitfont); 
   
+  prepareVisualization(); 
+  prepareSpyPlot();
+  
+  rectMode(CENTER); 
+  
+  smooth(); 
+}
+
+void draw() {
+  makeVisualization(); 
+  makeSpyPlot(); 
+}
+
+void prepareVisualization() {
   // Initialize the physics
   physics=new VerletPhysics2D();
   physics.setWorldBounds(new Rect(10,10,width-20,height-20));
   
   // create graph
-  Vec2D center = new Vec2D(width/2,height/2);
+  Vec2D center = new Vec2D(width*0.75,height/2);
   
   String path = dataPath("");
   File[] files = listFiles(path);
@@ -87,16 +121,15 @@ void setup() {
   
   datasetlen = loadStrings(dataset).length; 
   
-  createUI(); 
-  rectMode(CENTER); 
-  
-  smooth(); 
+  translate(600,0);
+  createUI();
 }
 
-void draw() {
+void makeVisualization() {
   background(bgcol); 
+  
   fill(360); 
-  text("DATASET: " + dataset, 30, 30);
+  text("DATASET: " + dataset, 630, 30);
   
   physics.update();
   
@@ -166,23 +199,93 @@ void draw() {
   text(foundStructures, 
         upperleftcorner_x + 10, upperleftcorner_y + 10,
         bottomrightcorner_x-10, bottomrightcorner_y-10);
+}
+
+void prepareSpyPlot() {
+  
+  String path = dataPath("");
+  File[] files = listFiles(path);
+  for(int i = 0; i < files.length; i++) { 
+    String filename = files[i].getName();
+    
+    // use the first model file that is found in the data directory as input
+    if(filename.endsWith(".out")) {
+      spyplotdata = filename; 
+      break; 
+    }
+  }
+  
+  //TESTING ONLY
+  spyplotdata = "hamster2.out"; 
+  
+  // put the full data into an array
+  String[] inputGraph = loadStrings(spyplotdata); 
+  
+  // iterate through data once to establish the range of node numbers
+  for(int i = 0; i < inputGraph.length; i++) {
+    int rowVertex = int(split(inputGraph[i], ',')[0]); 
+    int colVertex = int(split(inputGraph[i], ',')[1]);
+    
+    if(rowVertex > maxYAxis) maxYAxis = rowVertex;
+    if(rowVertex < minYAxis) minYAxis = rowVertex; 
+    if(colVertex > maxXAxis) maxXAxis = colVertex;
+    if(colVertex < minXAxis) minXAxis = colVertex; 
+  }
+  
+  numrows = maxYAxis-minYAxis+1;
+  numcols = maxXAxis-minXAxis+1; 
+  plotsize = max(numrows, numcols); 
+  
+  SpyPlot = new PlotPoint[plotsize][plotsize]; 
+  
+  // initialize SpyPlot
+  for(int i = 0; i < plotsize; i++) {
+    for(int j = 0; j < plotsize; j++) {
+      SpyPlot[i][j] = new PlotPoint(0, 0);
+    }
+  }
+  
+  // iterate through data again to populate the spy plot
+  for(int i = 0; i < inputGraph.length; i++) {
+    int rowVertex = int(split(inputGraph[i], ',')[0]); 
+    int colVertex = int(split(inputGraph[i], ',')[1]);
+    int colVal = colVertex-minXAxis; 
+    int rowVal = rowVertex-minYAxis; 
+    
+    // add edge in both directions
+    SpyPlot[rowVal][colVal].yPos = rowVal;
+    SpyPlot[rowVal][colVal].xPos = colVal; 
+    SpyPlot[rowVal][colVal].hasEdge = true;
+    
+    SpyPlot[colVal][rowVal].yPos = colVal;
+    SpyPlot[colVal][rowVal].xPos = rowVal; 
+    SpyPlot[colVal][rowVal].hasEdge = true; 
+  }
   
 }
 
+void makeSpyPlot() {
+  fill(360);
+  rect(0,0,width/2, height);
+  
+  pushMatrix();
+  translate(100,100); 
+  // display the SpyPlot
+  for(int i = 0; i < plotsize; i++) {
+    for(int j = 0; j < plotsize; j++) {
+      SpyPlot[i][j].display(); 
+    }
+  }
+  
+  popMatrix(); 
+}
+
 void createUI() {
+  
   // UI BUTTONS!!
-  /*
-  cp5.addButton("glyphOptions")
-     .setLabel("Customize")
-     .setPosition(30,50)
-     .setSize(100,30)
-     .setColorBackground(#061b28)
-     .setColorForeground(#ff8c19)
-     ;
-     */
   cp5.addButton("saveScreen")
      .setLabel("Save Screen")
-     .setPosition(180,50)
+     .setPosition(780,50)
      .setSize(100,30)
      .setColorBackground(#061b28)
      .setColorForeground(#ff8c19)
@@ -190,32 +293,16 @@ void createUI() {
      
   expandGlyphButton = cp5.addButton("expandGlyph")
      .setLabel("Expand Glyph")
-     .setPosition(330,50)
+     .setPosition(930,50)
      .setSize(110,30)
      .setColorBackground(#061b28)
      .setColorForeground(#ff8c19)
      .hide(); 
      ;
-  /*
-  cp5.addButton("previous5")
-     .setLabel("<")
-     .setPosition(550,50)
-     .setSize(30,30)
-     .setColorBackground(#061b28)
-     .setColorForeground(#ff8c19)
-     ;
      
-  cp5.addButton("next5")
-     .setLabel(">")
-     .setPosition(600,50)
-     .setSize(30,30)
-     .setColorBackground(#061b28)
-     .setColorForeground(#ff8c19)
-     ;
-  */
   returnButton = cp5.addButton("returnToGraph")
      .setLabel("Go Back")
-     .setPosition(370,50)
+     .setPosition(970,50)
      .setSize(110,30)
      .setColorBackground(#061b28)
      .setColorForeground(#ff8c19)
@@ -223,26 +310,30 @@ void createUI() {
      ;
   
   // Position in file slider
-  cp5.addSlider("newStructureFilePos")
-     .setPosition(30,620)
-     .setRange(0, datasetlen-5)
-     .setLabel("Position in file")
-     ;
+  if(datasetlen > 5) {
+    cp5.addSlider("newStructureFilePos")
+       .setPosition(630,620)
+       .setRange(0, datasetlen-5)
+       .setLabel("Position in file")
+       ;
+  }
+  
   
   // UI SLIDERS!!
   customization[0] = cp5.addSlider("cliqueRoundness")
-     .setPosition(30,100)
+     .setPosition(630,100)
      .setRange(0,7)
      .setLabel("Clique Roundness")
      .setVisible(false)
      ;
      
   customization[1] = cp5.addSlider("fc_hue")
-     .setPosition(30,130)
+     .setPosition(630,130)
      .setRange(0,360)
      .setLabel("Clique Hue")
      .setVisible(false)
      ;
+     
 }
 
 void mouseReleased() {
@@ -296,7 +387,7 @@ public void expandGlyph(int theValue) {
       println(glyphEncoding); 
       
       // the new cluster center
-      Vec2D center = new Vec2D(width/2,height/2);
+      Vec2D center = new Vec2D(width*.75,height/2);
       
       // Note: it's bad practice to reassign references to allocated objects all the time,
       // but I can't think of a cleaner way around this--
@@ -314,7 +405,7 @@ public void expandGlyph(int theValue) {
 
 public void returnToGraph() {
   // the new cluster center
-  Vec2D center = new Vec2D(width/2,height/2);
+  Vec2D center = new Vec2D(width*.75,height/2);
   
   c = new Cluster(dataset, 250, center, true);
   
