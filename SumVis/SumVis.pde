@@ -218,7 +218,7 @@ void prepareSpyPlot() {
   }
   
   //TESTING ONLY
-  spyplotdata = "hamster2.out"; 
+  //spyplotdata = "hamster2.out"; 
   
   // put the full data into an array
   String[] inputGraph = loadStrings(spyplotdata); 
@@ -287,7 +287,6 @@ void makeSpyPlot() {
 }
 
 void createUI() {
-  
   // UI BUTTONS!!
   cp5.addButton("saveScreen")
      .setLabel("Save Screen")
@@ -345,12 +344,7 @@ void createUI() {
 void mouseReleased() {
   ArrayList<Glyph> glyphs = c.getGlyphs(); 
   boolean foundselected = false; 
-  for(int i = 0; i < plotsize; i++) {
-    for(int j = 0; j < plotsize; j++) {
-      SpyPlot[i][j].selected = false;
-    }
-  }
-    
+  
   for (Glyph g: glyphs) {
     if(g.clicked) {
       g.setSelected(true); 
@@ -378,12 +372,11 @@ void mousePressed() {
   // Check to see if the mouse was clicked on the box
   for (Glyph g: glyphs) {
     if(g.contains(mouseX,mouseY)) {
+      
       g.setClicked(true); 
       break; 
     }
-    
   }
-  
 }
 
 // UI STUFF
@@ -396,8 +389,6 @@ public void expandGlyph(int theValue) {
       for(int i = 0; i < g.top5nodes.length; i++) {
         glyphEncoding += " " + g.top5nodes[i]; 
       }
-      
-      println(glyphEncoding); 
       
       // the new cluster center
       Vec2D center = new Vec2D(width*.75,height/2);

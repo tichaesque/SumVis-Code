@@ -46,7 +46,7 @@ class Glyph extends VerletParticle2D {
     if (clicked) {
       x = mousex;
       y = mousey; 
-      
+      //selected = true; 
     }
     
     mouseover = contains(int(mousex),int(mousey)); 
@@ -60,6 +60,15 @@ class Glyph extends VerletParticle2D {
     }
     else {
       noStroke();
+    }
+    
+    if(!spyplotted && selected) { 
+        plotHelper(true);
+        spyplotted = true; 
+      }
+    if(spyplotted && !selected) {
+      plotHelper(false);
+      spyplotted = false; 
     }
     
     float opacity = 360; 
@@ -79,22 +88,6 @@ class Glyph extends VerletParticle2D {
       fill(st_fill, opacity);
       star(x,y, size*0.5, size*0.8,5); 
       
-      if(!spyplotted && selected) {
-        println("\nminXAxis is: " + minXAxis);
-        println("minYAxis is: " + minYAxis);
-        println("star size is: " + glyphSize);
-        println("spyplot size is: " + plotsize + "x" + plotsize);
-        for(int i = 0; i < glyphSize; i++) {
-          print(allnodes[i] + ","); 
-        }
-        println(allnodes[1]-minXAxis);
-        
-        for(int i = 1; i < glyphSize; i++) {
-            SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].selected = true;
-        }
-        
-        spyplotted = true; 
-      }
     }
     /* Chains are represented as rectangles */
     else if(glyphclass.equals("ch")) {
@@ -142,8 +135,19 @@ class Glyph extends VerletParticle2D {
         text(glyphName + " ID: " + glyphSize, x,y-size*0.8); 
     }
     
-    if(spyplotted && !selected) {
-      spyplotted = false; 
+  }
+  
+  // function that sets the "selected" field of the spy plot points as a specified boolean value 
+  void plotHelper(boolean b) {
+    if(glyphclass.equals("fc")) {
+      //
+    }
+    /* Stars are represented as stars */
+    else if(glyphclass.equals("st")) {
+      for(int i = 1; i < glyphSize; i++) {
+          SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].selected = b;
+          SpyPlot[allnodes[i]-minNodeID][allnodes[0]-minNodeID].selected = b;
+      }
     }
     
   }
