@@ -84,8 +84,9 @@ void setup() {
   cp5 = new ControlP5(this);
   pixelDensity(displayDensity());
   
-  bitfont = createFont("Nintendo-DS-BIOS",20,true); 
-  textFont(bitfont); 
+  //bitfont = createFont("Nintendo-DS-BIOS",20,true);
+  bitfont = loadFont("Nintendo-DS-BIOS-48.vlw"); 
+  textFont(bitfont, 20); 
   
   prepareVisualization(); 
   prepareSpyPlot();
@@ -239,7 +240,7 @@ void prepareSpyPlot() {
   
   numrows = maxYAxis-minYAxis+1;
   numcols = maxXAxis-minXAxis+1; 
-  //plotsize = max(numrows, numcols);
+  
   plotsize = max(maxXAxis, maxYAxis)-min(minXAxis,minYAxis)+1; 
   minNodeID = min(minXAxis,minYAxis);  
   maxNodeID = max(maxXAxis,maxYAxis); 
@@ -257,8 +258,7 @@ void prepareSpyPlot() {
   for(int i = 0; i < inputGraph.length; i++) {
     int rowVertex = int(split(inputGraph[i], ',')[0]); 
     int colVertex = int(split(inputGraph[i], ',')[1]);
-    //int colVal = colVertex-minXAxis; 
-    //int rowVal = rowVertex-minYAxis;
+    
     int colVal = colVertex-minNodeID; 
     int rowVal = rowVertex-minNodeID;
     
@@ -325,7 +325,7 @@ void createUI() {
      .setColorBackground(#061b28)
      .setColorForeground(#ff8c19)
      ;
-     
+  /* 
   expandGlyphButton = cp5.addButton("expandGlyph")
      .setLabel("Tell Me More")
      .setPosition(930,50)
@@ -333,7 +333,7 @@ void createUI() {
      .setColorBackground(#061b28)
      .setColorForeground(#ff8c19)
      .hide(); 
-     ;
+     ;*/
      
   returnButton = cp5.addButton("returnToGraph")
      .setLabel("Go Back")
@@ -378,10 +378,10 @@ void mouseReleased() {
   for (Glyph g: glyphs) {
     if(g.clicked) {
       g.setSelected(true); 
-      
+      /*
       if(!isExpanded)
         expandGlyphButton.show();
-      
+      */
       foundselected = true; 
       
     }
@@ -392,10 +392,10 @@ void mouseReleased() {
     g.setClicked(false); 
   }
   
-  if(!foundselected) {
+  /*if(!foundselected) {
     expandGlyphButton.hide();
     
-  }
+  }*/
 }
 
 void mousePressed() {
