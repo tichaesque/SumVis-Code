@@ -46,7 +46,7 @@ class Glyph extends VerletParticle2D {
     if (clicked) {
       x = mousex;
       y = mousey; 
-      //selected = true; 
+      
     }
     
     mouseover = contains(int(mousex),int(mousey)); 
@@ -62,13 +62,13 @@ class Glyph extends VerletParticle2D {
       noStroke();
     }
     
-    if(!spyplotted && selected) { 
-      plotHelper(true);
-      spyplotted = true; 
-    }
-    if(spyplotted && !selected) {
+    if(spyplotted && !selected) { 
       plotHelper(false);
       spyplotted = false; 
+    }
+    else if(!spyplotted && selected) { 
+      plotHelper(true);
+      spyplotted = true; 
     }
     
     float opacity = 360; 
@@ -139,10 +139,17 @@ class Glyph extends VerletParticle2D {
   
   // function that sets the "selected" field of the spy plot points as a specified boolean value 
   void plotHelper(boolean b) {
+    /* Plotter for full-cliques */
     if(glyphclass.equals("fc")) {
-      //
+      for(int i = 1; i < glyphSize; i++) {
+        for(int k = i+1; k < glyphSize; k++) {
+          SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].selected = b;
+          SpyPlot[allnodes[k]-minNodeID][allnodes[i]-minNodeID].selected = b;
+          
+        }
+      }
     }
-    /* Stars are represented as stars */
+    /* Plotter for stars */
     else if(glyphclass.equals("st")) {
       for(int i = 1; i < glyphSize; i++) {
           SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].selected = b;

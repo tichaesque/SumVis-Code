@@ -295,9 +295,18 @@ class Cluster {
   void display() {
     // Show all the nodes
     for (int i = 0; i < glyphs.size(); i++) {
+      if(!glyphs.get(i).spyplotted && glyphs.get(i).selected) {
+        Glyph temp = (Glyph) glyphs.get(i);
+        // move element to the back of the list
+        // to ensure that it is the very last structure that is processed
+        glyphs.remove(i); 
+        glyphs.add(temp);
+      }
+      
       Glyph g = (Glyph) glyphs.get(i);
       g.update(mouseX,mouseY);
       g.display();
+      
     }
   }
 

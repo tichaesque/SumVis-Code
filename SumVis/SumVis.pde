@@ -74,6 +74,7 @@ int numcols;
 int plotsize; 
 
 int minNodeID;
+int maxNodeID;
 
 void setup() {
   background(bgcol); 
@@ -152,7 +153,7 @@ void makeVisualization() {
   
   // Text box showing structures found
   if(!isExpanded) {
-    foundStructures = "STRUCTURES FOUND:\n"; 
+    foundStructures = "STRUCTURES DISPLAYED:\n"; 
     
     for(int i = 0; i < structuresFound.length; i++) {
       int structurecount = structuresFound[i];
@@ -241,6 +242,7 @@ void prepareSpyPlot() {
   //plotsize = max(numrows, numcols);
   plotsize = max(maxXAxis, maxYAxis)-min(minXAxis,minYAxis)+1; 
   minNodeID = min(minXAxis,minYAxis);  
+  maxNodeID = max(maxXAxis,maxYAxis); 
   
   SpyPlot = new PlotPoint[plotsize][plotsize]; 
   
@@ -272,12 +274,38 @@ void prepareSpyPlot() {
   
 }
 
+// draws the SpyPlot
 void makeSpyPlot() {
   fill(#f5f5f5);
   rect(0,0,width/2, height);
   
   pushMatrix();
-  translate(100,100); 
+  translate((width/2-plotWidth)/2,(height-plotWidth)/2); 
+  
+  int step = ceil((maxNodeID-minNodeID+1)/9);
+  
+  // now draw the axis labels
+  for(int i = minNodeID; i <= maxNodeID; i+=step) {
+    float axisPos = map(i, minNodeID, maxNodeID, 0, plotWidth); 
+    
+    textAlign(CENTER);
+    // x axis labels
+    fill(0);
+    ellipse(axisPos, -10, 5,5);
+    
+    text(i, axisPos, -20); 
+    
+    textAlign(RIGHT);
+    // y axis labels
+    fill(0);
+    ellipse(-10, axisPos, 5,5);
+    
+    text(i, -20, axisPos + 5); 
+   
+  }
+  
+  textAlign(LEFT);
+  
   // display the SpyPlot
   for(int i = 0; i < plotsize; i++) {
     for(int j = 0; j < plotsize; j++) {
@@ -355,6 +383,7 @@ void mouseReleased() {
         expandGlyphButton.show();
       
       foundselected = true; 
+      
     }
     else {
       g.setSelected(false); 
@@ -374,8 +403,10 @@ void mousePressed() {
   // Check to see if the mouse was clicked on the box
   for (Glyph g: glyphs) {
     if(g.contains(mouseX,mouseY)) {
-      
       g.setClicked(true); 
+      
+      
+      
       break; 
     }
   }

@@ -1,7 +1,6 @@
-
+// the display width for the spy plot
+float plotWidth = 400; 
 class PlotPoint {
-  // the display width for the spy plot
-  private float plotWidth = 400; 
   private float ellipsesize = plotWidth/plotsize;
   
   boolean hasEdge;  // is there an edge between the two points?
