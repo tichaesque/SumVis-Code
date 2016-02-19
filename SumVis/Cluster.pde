@@ -3,6 +3,9 @@
 // Daniel Shiffman
 // http://natureofcode.com
 
+boolean mouseoverSomething; 
+Glyph selectedGlyph;
+
 class Cluster {
 
   // A cluster is a grouping of nodes
@@ -294,20 +297,28 @@ class Cluster {
 
   void display() {
     // Show all the nodes
+    mouseoverSomething = false;
+    
     for (int i = 0; i < glyphs.size(); i++) {
       if(!glyphs.get(i).spyplotted && glyphs.get(i).selected) {
         Glyph temp = (Glyph) glyphs.get(i);
-        // move element to the back of the list
+        // move element to the back of the list (buffered)
         // to ensure that it is the very last structure that is processed
         glyphs.remove(i); 
         glyphs.add(temp);
+        
+        selectedGlyph = glyphs.get(glyphs.size()-1); 
       }
       
       Glyph g = (Glyph) glyphs.get(i);
       g.update(mouseX,mouseY);
       g.display();
       
+      if(g.mouseover) {
+        mouseoverSomething = true;
+      }
     }
+    //println(mouseoverSomething);
   }
 
   // Draw all the internal connections

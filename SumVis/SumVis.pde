@@ -76,6 +76,8 @@ int plotsize;
 int minNodeID;
 int maxNodeID;
 
+boolean foundselected;
+
 void setup() {
   background(bgcol); 
   colorMode(HSB, 360, 100, 100);
@@ -145,7 +147,8 @@ void makeVisualization() {
   if(newStructureFilePos != structureFilePos) {
     for(int i = 0; i < plotsize; i++) {
       for(int j = 0; j < plotsize; j++) {
-        SpyPlot[i][j].selected = false; 
+        SpyPlot[i][j].isFirst = false;
+        SpyPlot[i][j].isSecond = false; 
       }
     }
     structureFilePos = newStructureFilePos; 
@@ -291,14 +294,14 @@ void makeSpyPlot() {
     textAlign(CENTER);
     // x axis labels
     fill(0);
-    ellipse(axisPos, -10, 5,5);
+    ellipse(axisPos, -10, plotWidth/plotsize,plotWidth/plotsize);
     
     text(i, axisPos, -20); 
     
     textAlign(RIGHT);
     // y axis labels
     fill(0);
-    ellipse(-10, axisPos, 5,5);
+    ellipse(-10, axisPos, plotWidth/plotsize,plotWidth/plotsize);
     
     text(i, -20, axisPos + 5); 
    
@@ -373,7 +376,7 @@ void createUI() {
 
 void mouseReleased() {
   ArrayList<Glyph> glyphs = c.getGlyphs(); 
-  boolean foundselected = false; 
+  foundselected = false; 
   
   for (Glyph g: glyphs) {
     if(g.clicked) {
@@ -463,6 +466,7 @@ public void next5(int theValue) {
     
     isExpanded = false; 
     returnButton.hide();
+    
   }
 }
 
@@ -477,6 +481,7 @@ public void previous5(int theValue) {
     
     isExpanded = false; 
     returnButton.hide();
+    
   }
 }
 

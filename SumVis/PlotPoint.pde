@@ -5,6 +5,9 @@ class PlotPoint {
   
   boolean hasEdge;  // is there an edge between the two points?
   boolean selected; // was the point selected? 
+  boolean isFirst;  // is this part of the first structure selected? 
+  boolean isSecond; // is this part of the second structure selected?
+  boolean isOverlap;// is this part of an overlap?
   int xPos;         // the column position 
   int yPos;         // the row positiion
   
@@ -20,12 +23,24 @@ class PlotPoint {
     noStroke(); 
     
     if(hasEdge) {
+      /*
       if(selected) {
         fill(#ff6666); 
+      }*/
+      // an overlap
+      if(isFirst && isSecond) {
+        fill(#800080);
       }
-      else {
-        fill(#81d8d0);
+      else if(isFirst) {
+        fill(#ff6666); 
       }
+      else if(isSecond) {
+        fill(#43dde5);
+      }
+      else if(!isFirst && !isSecond) {
+        fill(#cecece);
+      }
+      
       
       float xPosMapped = map(xPos, 0, plotsize-1, 0, plotWidth);
       float yPosMapped = map(yPos, 0, plotsize-1, 0, plotWidth);

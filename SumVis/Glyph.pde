@@ -62,13 +62,27 @@ class Glyph extends VerletParticle2D {
       noStroke();
     }
     
-    if(spyplotted && !selected) { 
+    // deselect previous structure that was selected
+    if(spyplotted && !selected) {
       plotHelper(false);
       spyplotted = false; 
     }
+    // select new structure
     else if(!spyplotted && selected) { 
       plotHelper(true);
       spyplotted = true; 
+    }
+    
+    if(foundselected && !spyplotted) {
+      if(mouseover) {
+        //println("true, "+ mouseoverSomething);
+        plotOverlapHelper(true);
+      }
+      else if(!mouseover) {
+        //println("false, "+mouseoverSomething);
+        plotOverlapHelper(false);
+       
+      }
     }
     
     float opacity = 360; 
@@ -138,13 +152,16 @@ class Glyph extends VerletParticle2D {
   }
   
   // function that sets the "selected" field of the spy plot points as a specified boolean value 
-  void plotHelper(boolean b) {
+  //void plotHelper(boolean b) {
+  void plotHelper(boolean first) {
     /* Plotter for full-cliques */
     if(glyphclass.equals("fc")) {
       for(int i = 1; i < glyphSize; i++) {
         for(int k = i+1; k < glyphSize; k++) {
-          SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].selected = b;
-          SpyPlot[allnodes[k]-minNodeID][allnodes[i]-minNodeID].selected = b;
+          SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isFirst = first;
+          SpyPlot[allnodes[k]-minNodeID][allnodes[i]-minNodeID].isFirst = first;
+          SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isSecond = false;
+          SpyPlot[allnodes[k]-minNodeID][allnodes[i]-minNodeID].isSecond = false;
           
         }
       }
@@ -152,11 +169,60 @@ class Glyph extends VerletParticle2D {
     /* Plotter for stars */
     else if(glyphclass.equals("st")) {
       for(int i = 1; i < glyphSize; i++) {
-          SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].selected = b;
-          SpyPlot[allnodes[i]-minNodeID][allnodes[0]-minNodeID].selected = b;
+          SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isFirst = first;
+          SpyPlot[allnodes[i]-minNodeID][allnodes[0]-minNodeID].isFirst = first;
+          SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isSecond = false;
+          SpyPlot[allnodes[i]-minNodeID][allnodes[0]-minNodeID].isSecond = false;
+          
       }
     }
     
+  }
+  
+  
+  void plotOverlapHelper(boolean second) {
+    if(glyphclass.equals("fc")) {
+      for(int i = 1; i < glyphSize; i++) {
+        for(int k = i+1; k < glyphSize; k++) {
+          if(!second && SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isSecond) {
+            if(!mouseoverSomething) {
+              SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isSecond = false;
+              SpyPlot[allnodes[k]-minNodeID][allnodes[i]-minNodeID].isSecond = false;
+            }
+          }
+          else if(second && !SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isSecond) {
+            SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isSecond = true;
+            SpyPlot[allnodes[k]-minNodeID][allnodes[i]-minNodeID].isSecond = true;
+          }
+          else if(!second && !SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isSecond) {
+            SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isSecond = false;
+            SpyPlot[allnodes[k]-minNodeID][allnodes[i]-minNodeID].isSecond = false;
+          }
+          
+        }
+      }
+    }
+    /* Plotter for stars */
+    else if(glyphclass.equals("st")) {
+      for(int i = 1; i < glyphSize; i++) {
+        if(!second && SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isSecond) {
+          if(!mouseoverSomething) {
+            SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isSecond = false;
+            SpyPlot[allnodes[i]-minNodeID][allnodes[0]-minNodeID].isSecond = false;
+          }
+        }
+        
+        else if(second && !SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isSecond) {
+          SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isSecond = true;
+          SpyPlot[allnodes[i]-minNodeID][allnodes[0]-minNodeID].isSecond = true;
+        }
+        else if(!second && !SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isSecond) {
+          SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isSecond = false;
+          SpyPlot[allnodes[i]-minNodeID][allnodes[0]-minNodeID].isSecond = false;
+        }
+      
+      }
+    }
   }
   
   void bc(float x, float y, float radius) {
