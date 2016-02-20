@@ -29,16 +29,16 @@ class PlotPoint {
       }*/
       // an overlap
       if(isFirst && isSecond) {
-        fill(#800080);
+        fill(#98137e);
       }
       else if(isFirst) {
-        fill(#ff6666); 
+        fill(#ff4444); 
       }
       else if(isSecond) {
         fill(#43dde5);
       }
       else if(!isFirst && !isSecond) {
-        fill(#cecece);
+        fill(#dedede);
       }
       
       

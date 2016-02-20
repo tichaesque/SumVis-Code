@@ -151,6 +151,7 @@ void makeVisualization() {
         SpyPlot[i][j].isSecond = false; 
       }
     }
+    foundselected = false;
     structureFilePos = newStructureFilePos; 
     returnToGraph();
   }

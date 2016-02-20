@@ -152,7 +152,6 @@ class Glyph extends VerletParticle2D {
   }
   
   // function that sets the "selected" field of the spy plot points as a specified boolean value 
-  //void plotHelper(boolean b) {
   void plotHelper(boolean first) {
     /* Plotter for full-cliques */
     if(glyphclass.equals("fc")) {
