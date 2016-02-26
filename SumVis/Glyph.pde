@@ -1,6 +1,6 @@
 
 class Glyph extends VerletParticle2D {
-  boolean spyplotted;// was the glyph highlighted in the spyplot? (after selection)  
+  boolean spyplotted; // was the glyph highlighted in the spyplot? (after selection)  
   boolean selected;  // was the glyph selected? (used for expansion)
   boolean mouseover; // is the mouse over the glyph?
   boolean clicked;   // is the glyph clicked on? (used for handling dragging)
@@ -8,10 +8,11 @@ class Glyph extends VerletParticle2D {
   String glyphclass; // the type of glyph
   int glyphSize;     // the number of nodes in the glyph
   
-  int[] top5nodes;   // the top 5 nodes in the glyph structure DELETE LATER
+  int bc_split_idx; // the index that denotes where the two sets in the bipartite core are partitioned (-1 for non-bipartite graphs)
+  
   int[] allnodes;   // all the nodes in the glyph structure
   
-  Glyph(Vec2D pos, float size_, String glyphclass_, int glyphSize_, int[] top5nodes_, int[] allnodes_) { 
+  Glyph(Vec2D pos, float size_, String glyphclass_, int glyphSize_, int[] allnodes_) { 
     super(pos);
     clicked = false; 
     mouseover = false; 
@@ -23,8 +24,7 @@ class Glyph extends VerletParticle2D {
 
     glyphclass = glyphclass_;
     
-    top5nodes = new int[5]; 
-    arrayCopy(top5nodes_, top5nodes); 
+    bc_split_idx = -1;
     
     allnodes = new int[glyphSize]; 
     arrayCopy(allnodes_, allnodes); 
@@ -128,26 +128,12 @@ class Glyph extends VerletParticle2D {
       bc(x,y, size);
     }
     
-    /* otherwise the "glyph" is just a regular node (used in expansion) */
-    else {
-      glyphName = "Node"; 
-      color node_fill = (color(node_hue,49,100)); 
-      fill(node_fill, opacity);
-      ellipseMode(CENTER); 
-      ellipse(x,y,size,size);
-    }
-    
     if(mouseover || selected) {
       fill(360); 
+      text(glyphName + ", size " + glyphSize, x,y-size*0.8); 
       
-      // normal mode: show the size of the glyphs
-      if(top5nodes[0] != -1)
-        text(glyphName + ", size " + glyphSize, x,y-size*0.8); 
-        
-      // expanded mode: show the node IDs
-      else
-        text(glyphName + " ID: " + glyphSize, x,y-size*0.8); 
     }
+    
     
   }
   
@@ -175,11 +161,34 @@ class Glyph extends VerletParticle2D {
           
       }
     }
+    /* Plotter for chains */
+    else if(glyphclass.equals("ch")) {
+      for(int i = 1; i < glyphSize; i++) {
+          SpyPlot[allnodes[i-1]-minNodeID][allnodes[i]-minNodeID].isFirst = first;
+          SpyPlot[allnodes[i]-minNodeID][allnodes[i-1]-minNodeID].isFirst = first;
+          SpyPlot[allnodes[i-1]-minNodeID][allnodes[i]-minNodeID].isSecond = false;
+          SpyPlot[allnodes[i]-minNodeID][allnodes[i-1]-minNodeID].isSecond = false;
+          
+      }
+    }
+    /* Plotter for bipartite cores */
+    else if(glyphclass.equals("bc")) {
+      for(int i = 0; i <= bc_split_idx; i++) {
+          for(int k = bc_split_idx+1; k < glyphSize; k++) {
+            SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isFirst = first;
+            SpyPlot[allnodes[k]-minNodeID][allnodes[i]-minNodeID].isFirst = first;
+            SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isSecond = false;
+            SpyPlot[allnodes[k]-minNodeID][allnodes[i]-minNodeID].isSecond = false;
+          }
+          
+      }
+    }
     
   }
   
   
   void plotOverlapHelper(boolean second) {
+    /* Plotter for full-cliques */
     if(glyphclass.equals("fc")) {
       for(int i = 1; i < glyphSize; i++) {
         for(int k = i+1; k < glyphSize; k++) {
@@ -220,6 +229,49 @@ class Glyph extends VerletParticle2D {
           SpyPlot[allnodes[i]-minNodeID][allnodes[0]-minNodeID].isSecond = false;
         }
       
+      }
+    }
+    /* Plotter for chains */
+    else if(glyphclass.equals("ch")) {
+      for(int i = 1; i < glyphSize; i++) {
+        if(!second && SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isSecond) {
+          if(!mouseoverSomething) {
+            SpyPlot[allnodes[i-1]-minNodeID][allnodes[i]-minNodeID].isSecond = false;
+            SpyPlot[allnodes[i]-minNodeID][allnodes[i-1]-minNodeID].isSecond = false;
+          }
+        }
+        
+        else if(second && !SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isSecond) {
+          SpyPlot[allnodes[i-1]-minNodeID][allnodes[i]-minNodeID].isSecond = true;
+          SpyPlot[allnodes[i]-minNodeID][allnodes[i-1]-minNodeID].isSecond = true;
+        }
+        else if(!second && !SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isSecond) {
+          SpyPlot[allnodes[i-1]-minNodeID][allnodes[i]-minNodeID].isSecond = false;
+          SpyPlot[allnodes[i]-minNodeID][allnodes[i-1]-minNodeID].isSecond = false;
+        }
+      
+      }
+    }
+    /* Plotter for bipartite-cores */
+    if(glyphclass.equals("bc")) {
+      for(int i = 0; i <= bc_split_idx; i++) {
+        for(int k = bc_split_idx+1; k < glyphSize; k++) {
+          if(!second && SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isSecond) {
+            if(!mouseoverSomething) {
+              SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isSecond = false;
+              SpyPlot[allnodes[k]-minNodeID][allnodes[i]-minNodeID].isSecond = false;
+            }
+          }
+          else if(second && !SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isSecond) {
+            SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isSecond = true;
+            SpyPlot[allnodes[k]-minNodeID][allnodes[i]-minNodeID].isSecond = true;
+          }
+          else if(!second && !SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isSecond) {
+            SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isSecond = false;
+            SpyPlot[allnodes[k]-minNodeID][allnodes[i]-minNodeID].isSecond = false;
+          }
+          
+        }
       }
     }
   }

@@ -70,7 +70,7 @@ class Cluster {
         // special dummy array used in expansion
         int [] blank = {-1, -1,-1,-1,-1}; 
         
-        Glyph g = new Glyph(center.add(Vec2D.randomVector()), 30, "none", int(glyphcomponents[i]), blank, blank);
+        Glyph g = new Glyph(center.add(Vec2D.randomVector()), 30, "none", int(glyphcomponents[i]), blank);
         glyphs.add(g); 
       }
     }
@@ -145,31 +145,28 @@ class Cluster {
         size = map(glyphSize, minGlyphSize, maxGlyphSize, 30f, 30f*(1+log(maxGlyphSize/minGlyphSize)));
         
       // save the structure's components, to be used in the expansion phase
-      int[] top5nodes = new int[5];
       int[] allnodes = new int[glyphSize];
       
-      // copy top 5 nodes DELETE LATER
-      for(int j = 1; j < min(6, glyphSize+1); j++) {
-        // remove comma at the end, if it exists
-        if(glyphcomponents[j].charAt(glyphcomponents[j].length()-1) == ',') {
-          glyphcomponents[j] = glyphcomponents[j].substring(0,glyphcomponents[j].length()-1);
-        }
-        
-        top5nodes[j-1] = int(glyphcomponents[j]); 
-      }
+      int bc_split = -1;
       
       // copy all nodes
       for(int j = 1; j < glyphSize+1; j++) {
-        // remove comma at the end, if it exists
+        // remove comma at the end of the node ID, if it exists
         if(glyphcomponents[j].charAt(glyphcomponents[j].length()-1) == ',') {
           glyphcomponents[j] = glyphcomponents[j].substring(0,glyphcomponents[j].length()-1);
+          
+          // if this is true we're looking at a bipartite core
+          if(j != 1)
+            bc_split = j-1;
         }
         
         allnodes[j-1] = int(glyphcomponents[j]); 
       }
       
-      Glyph g = new Glyph(center.add(Vec2D.randomVector()), size, glyphclass, glyphSize, top5nodes, allnodes);
+      Glyph g = new Glyph(center.add(Vec2D.randomVector()), size, glyphclass, glyphSize, allnodes);
       glyphs.add(g); 
+      
+      g.bc_split_idx = bc_split;
       
       if(glyphclass.equals("fc")) {
         structuresFound[0]++; 

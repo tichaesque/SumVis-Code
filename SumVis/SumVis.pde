@@ -423,10 +423,6 @@ public void expandGlyph(int theValue) {
     if(g.selected) {
       String glyphEncoding = g.glyphclass;
       
-      for(int i = 0; i < g.top5nodes.length; i++) {
-        glyphEncoding += " " + g.top5nodes[i]; 
-      }
-      
       // the new cluster center
       Vec2D center = new Vec2D(width*.75,height/2);
       
