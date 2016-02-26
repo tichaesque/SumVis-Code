@@ -1,2 +1,4 @@
 # SumVis-Code
-SCS Honors Research Project
+Code for the SCS Honors Undergraduate Research Thesis. 
+
+Advisor: Christos Faloutsos
