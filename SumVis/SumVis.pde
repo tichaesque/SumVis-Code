@@ -101,6 +101,29 @@ void setup() {
 void draw() {
   makeVisualization(); 
   makeSpyPlot(); 
+  drawUI();
+}
+
+void drawUI() {
+  textAlign(LEFT);
+  textSize(18);  
+  fill(#ffffff);
+  
+   // scrolling rectangle   
+  float rectPosX = map(newStructureFilePos, 0, datasetlen-5, 630, 730);
+  rectMode(CENTER);
+  
+  text("Showing structures " + newStructureFilePos + "-" + int(newStructureFilePos+4), 628, 600);
+  
+  if(newStructureFilePos == 0) {
+    fill(#ffffff); 
+    text("^scroll for more", rectPosX-2, 655); 
+    fill(#ffffff);
+  }
+  else
+    fill(#3399ff);
+  
+  rect(rectPosX, 624, 4,25);
 }
 
 void prepareVisualization() {
@@ -134,6 +157,7 @@ void prepareVisualization() {
 void makeVisualization() {
   background(bgcol); 
   
+  textSize(20);
   fill(360); 
   text("DATASET: " + dataset, 630, 30);
   
@@ -324,7 +348,7 @@ void createUI() {
   // UI BUTTONS!!
   cp5.addButton("saveScreen")
      .setLabel("Save Screen")
-     .setPosition(780,50)
+     .setPosition(width*0.55,50)
      .setSize(100,30)
      .setColorBackground(#061b28)
      .setColorForeground(#ff8c19)
@@ -353,7 +377,12 @@ void createUI() {
     cp5.addSlider("newStructureFilePos")
        .setPosition(630,620)
        .setRange(0, datasetlen-5)
-       .setLabel("Position in file")
+       .setSize(100,10) 
+       .setColorBackground(#ffffff) 
+       .setColorForeground(#3399ff)
+       .setColorValue(#ffffff)
+       .setColorActive(#3399ff)
+       .setLabel(" ")
        ;
   }
   
