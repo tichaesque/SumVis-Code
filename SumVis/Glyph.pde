@@ -100,7 +100,7 @@ class Glyph extends VerletParticle2D {
       glyphName = "Star"; 
       color st_fill = (color(st_hue,100,100)); 
       fill(st_fill, opacity);
-      star(x,y, size*0.5, size*0.8,5); 
+      star(x,y, size*0.4, size*0.7,5); 
       
     }
     /* Chains are represented as rectangles */
@@ -109,7 +109,7 @@ class Glyph extends VerletParticle2D {
       color ch_fill = (color(ch_hue,66,80)); 
       fill(ch_fill, opacity);
       rectMode(CENTER); 
-      rect(x,y,size*2,size,8);
+      rect(x,y,size*1.4,size*0.7,8);
     }
     /* Bipartite cores are represented as bowties */
     else if(glyphclass.equals("bc")) {
@@ -117,7 +117,7 @@ class Glyph extends VerletParticle2D {
       color bc_fill = (color(bc_hue,49,100)); 
       fill(bc_fill, opacity);
       rectMode(CENTER); 
-      bc(x,y, size);
+      bc(x,y, size*0.6);
     }
     /* Near-bipartite cores are represented as bowties, but pink */
     else if(glyphclass.equals("nb")) {
@@ -125,7 +125,7 @@ class Glyph extends VerletParticle2D {
       color bc_fill = (color(bc_hue,100,100)); 
       fill(bc_fill, opacity);
       rectMode(CENTER); 
-      bc(x,y, size);
+      bc(x,y, size*0.6);
     }
     
     if(mouseover || selected) {
