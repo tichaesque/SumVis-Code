@@ -155,7 +155,7 @@ class Glyph extends VerletParticle2D {
     }
     /* Plotter for stars */
     else if(glyphclass.equals("st")) {
-      for(int i = 0; i < glyphSize; i++) {
+      for(int i = 1; i < glyphSize; i++) {
           SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isFirst = first;
           SpyPlot[allnodes[i]-minNodeID][allnodes[0]-minNodeID].isFirst = first;
           SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isSecond = false;
@@ -214,7 +214,7 @@ class Glyph extends VerletParticle2D {
     }
     /* Plotter for stars */
     else if(glyphclass.equals("st")) {
-      for(int i = 0; i < glyphSize; i++) {
+      for(int i = 1; i < glyphSize; i++) {
         if(!second && SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isSecond) {
           if(!mouseoverSomething) {
             SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isSecond = false;
