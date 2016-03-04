@@ -141,8 +141,10 @@ class Glyph extends VerletParticle2D {
   void plotHelper(boolean first) {
     /* Plotter for full-cliques */
     if(glyphclass.equals("fc")) {
-      for(int i = 1; i < glyphSize; i++) {
+      
+      for(int i = 0; i < glyphSize; i++) {
         for(int k = i+1; k < glyphSize; k++) {
+          
           SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isFirst = first;
           SpyPlot[allnodes[k]-minNodeID][allnodes[i]-minNodeID].isFirst = first;
           SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isSecond = false;
@@ -153,7 +155,7 @@ class Glyph extends VerletParticle2D {
     }
     /* Plotter for stars */
     else if(glyphclass.equals("st")) {
-      for(int i = 1; i < glyphSize; i++) {
+      for(int i = 0; i < glyphSize; i++) {
           SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isFirst = first;
           SpyPlot[allnodes[i]-minNodeID][allnodes[0]-minNodeID].isFirst = first;
           SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isSecond = false;
@@ -190,7 +192,7 @@ class Glyph extends VerletParticle2D {
   void plotOverlapHelper(boolean second) {
     /* Plotter for full-cliques */
     if(glyphclass.equals("fc")) {
-      for(int i = 1; i < glyphSize; i++) {
+      for(int i = 0; i < glyphSize; i++) {
         for(int k = i+1; k < glyphSize; k++) {
           if(!second && SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isSecond) {
             if(!mouseoverSomething) {
@@ -212,7 +214,7 @@ class Glyph extends VerletParticle2D {
     }
     /* Plotter for stars */
     else if(glyphclass.equals("st")) {
-      for(int i = 1; i < glyphSize; i++) {
+      for(int i = 0; i < glyphSize; i++) {
         if(!second && SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isSecond) {
           if(!mouseoverSomething) {
             SpyPlot[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isSecond = false;

@@ -96,6 +96,7 @@ void setup() {
   rectMode(CENTER); 
   
   smooth(); 
+  
 }
 
 void draw() {
