@@ -1,7 +1,7 @@
 // the display width for the spy plot
 float plotWidth = 400; 
 class PlotPoint {
-  private float ellipsesize = plotWidth/plotsize;
+  private float ellipsesize = max(plotWidth/plotsize, 2);
   
   boolean hasEdge;  // is there an edge between the two points?
   boolean selected; // was the point selected? 
@@ -12,6 +12,7 @@ class PlotPoint {
   int yPos;         // the row positiion
   
   PlotPoint(int yPos_, int xPos_) {
+    
     hasEdge = false; 
     selected = false; 
     
@@ -20,7 +21,7 @@ class PlotPoint {
   }
   
   void display() {
-    noStroke(); 
+    noStroke();  
     
     if(hasEdge) {
       /*

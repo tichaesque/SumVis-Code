@@ -174,7 +174,7 @@ class Glyph extends VerletParticle2D {
       }
     }
     /* Plotter for bipartite cores */
-    else if(glyphclass.equals("bc")) {
+    else if(glyphclass.equals("bc") || glyphclass.equals("nb")) {
       for(int i = 0; i <= bc_split_idx; i++) {
           for(int k = bc_split_idx+1; k < glyphSize; k++) {
             SpyPlot[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isFirst = first;
