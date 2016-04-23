@@ -75,12 +75,13 @@ class Hairball {
       VerletParticle2D pi = (VerletParticle2D) nodes[src-minNodeID];
       VerletParticle2D pj = (VerletParticle2D) nodes[dst-minNodeID];
 
-      if (!nodes[src-minNodeID].isSelected && !nodes[dst-minNodeID].isSelected) {
-        stroke(#FFFF00, 80);
+      if (!SpyPlotPoints[src-minNodeID][dst-minNodeID].isFirst) {
+        stroke(#d0d0d0, 80);
         strokeWeight(0.75);
-      } else if (nodes[src-minNodeID].isSelected && nodes[dst-minNodeID].isSelected) {
+      } else {
+        println("src: " + src + "dst: " + dst); 
         stroke(#FF0000);
-        strokeWeight(2);
+        strokeWeight(1);
       }
 
       line(pi.x, pi.y, pj.x, pj.y);

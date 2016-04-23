@@ -141,8 +141,6 @@ class Glyph extends VerletParticle2D {
           SpyPlotPoints[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isSecond = false;
           SpyPlotPoints[allnodes[k]-minNodeID][allnodes[i]-minNodeID].isSecond = false;
 
-          hairball.nodes[allnodes[i]-minNodeID].isSelected = first;
-          hairball.nodes[allnodes[k]-minNodeID].isSelected = first;
         }
       }
     }
@@ -154,8 +152,6 @@ class Glyph extends VerletParticle2D {
         SpyPlotPoints[allnodes[0]-minNodeID][allnodes[i]-minNodeID].isSecond = false;
         SpyPlotPoints[allnodes[i]-minNodeID][allnodes[0]-minNodeID].isSecond = false;
 
-        hairball.nodes[allnodes[0]-minNodeID].isSelected = first;
-        hairball.nodes[allnodes[i]-minNodeID].isSelected = first;
       }
     }
     /* Plotter for chains */
@@ -165,6 +161,7 @@ class Glyph extends VerletParticle2D {
         SpyPlotPoints[allnodes[i]-minNodeID][allnodes[i-1]-minNodeID].isFirst = first;
         SpyPlotPoints[allnodes[i-1]-minNodeID][allnodes[i]-minNodeID].isSecond = false;
         SpyPlotPoints[allnodes[i]-minNodeID][allnodes[i-1]-minNodeID].isSecond = false;
+
       }
     }
     /* Plotter for bipartite cores */
@@ -175,6 +172,7 @@ class Glyph extends VerletParticle2D {
           SpyPlotPoints[allnodes[k]-minNodeID][allnodes[i]-minNodeID].isFirst = first;
           SpyPlotPoints[allnodes[i]-minNodeID][allnodes[k]-minNodeID].isSecond = false;
           SpyPlotPoints[allnodes[k]-minNodeID][allnodes[i]-minNodeID].isSecond = false;
+
         }
       }
     }
