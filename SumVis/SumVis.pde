@@ -5,8 +5,7 @@
 import toxi.geom.*;
 import toxi.physics2d.*;
 import toxi.physics2d.behaviors.*;
-import controlP5.*;
-import javax.swing.*;
+import controlP5.*; 
 
 /******* FOR THE MAIN VISUALIZATION *******/
 ControlP5 cp5;
