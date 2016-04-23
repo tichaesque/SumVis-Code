@@ -42,7 +42,6 @@ class PlotPoint {
         fill(#dedede);
       }
       
-      
       float xPosMapped = map(xPos, 0, plotsize-1, 0, plotWidth);
       float yPosMapped = map(yPos, 0, plotsize-1, 0, plotWidth);
       

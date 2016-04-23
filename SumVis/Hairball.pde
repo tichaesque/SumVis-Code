@@ -76,10 +76,9 @@ class Hairball {
       VerletParticle2D pj = (VerletParticle2D) nodes[dst-minNodeID];
 
       if (!SpyPlotPoints[src-minNodeID][dst-minNodeID].isFirst) {
-        stroke(#d0d0d0, 80);
+        stroke(#d0d0d0, 60);
         strokeWeight(0.75);
-      } else {
-        println("src: " + src + "dst: " + dst); 
+      } else { 
         stroke(#FF0000);
         strokeWeight(1);
       }

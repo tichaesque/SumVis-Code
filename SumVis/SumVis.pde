@@ -94,7 +94,7 @@ void setup() {
 
   rectMode(CENTER); 
 
-  smooth(); 
+  smooth();
 }
 
 void draw() {
@@ -313,20 +313,23 @@ void createUI() {
 }
 
 void mouseReleased() {
-  ArrayList<Glyph> glyphs = c.getGlyphs(); 
-  foundselected = false; 
-  hairballRendered = false;
+  if (!((width*0.2 <= mouseX && mouseX <= width*0.2+100) && 
+    (50 <= mouseY && mouseY <=50+30))) {
+    ArrayList<Glyph> glyphs = c.getGlyphs(); 
+    foundselected = false; 
+    hairballRendered = false;
 
-  for (Glyph g : glyphs) {
-    if (g.clicked) {
-      g.setSelected(true); 
+    for (Glyph g : glyphs) {
+      if (g.clicked) {
+        g.setSelected(true); 
 
-      foundselected = true;
-    } else {
-      g.setSelected(false);
+        foundselected = true;
+      } else {
+        g.setSelected(false);
+      }
+
+      g.setClicked(false);
     }
-
-    g.setClicked(false);
   }
 }
 
