@@ -54,10 +54,10 @@ class Hairball {
       VerletParticle2D pi = (VerletParticle2D) nodes[src-minNodeID];
       VerletParticle2D pj = (VerletParticle2D) nodes[dst-minNodeID];
 
-      pi.x = random(width*0.1, width*0.4);
-      pj.x = random(width*0.1, width*0.4);
-      pi.y = random(height*0.2, height*0.8);
-      pj.y = random(height*0.2, height*0.8);
+      pi.x = random(width*0.05, width*0.45);
+      pj.x = random(width*0.05, width*0.45);
+      pi.y = random(height*0.2, height*0.9);
+      pj.y = random(height*0.2, height*0.9);
     }
   } 
 

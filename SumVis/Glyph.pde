@@ -46,9 +46,11 @@ class Glyph extends VerletParticle2D {
     if (clicked) {
       x = mousex;
       y = mousey;
+      
     }
 
     mouseover = contains(int(mousex), int(mousey));
+    
   }
 
   void display() {
@@ -72,13 +74,13 @@ class Glyph extends VerletParticle2D {
     }
 
     if (foundselected && !spyplotted) {
-      if (mouseover) {
-        //println("true, "+ mouseoverSomething);
-        plotOverlapHelper(true);
-      } else if (!mouseover) {
-        //println("false, "+mouseoverSomething);
-        plotOverlapHelper(false);
-      }
+      if (mouseover) { 
+        plotOverlapHelper(true);  
+      } else if (!mouseover) { 
+        plotOverlapHelper(false); 
+      } 
+      
+      spyPlotRendered = false;
     }
 
     float opacity = 360; 
@@ -131,6 +133,9 @@ class Glyph extends VerletParticle2D {
 
   // function that sets the "selected" field of the spy plot points as a specified boolean value 
   void plotHelper(boolean first) {
+    // refresh hairball every time the spy plot is changed
+    hairballRendered = false;
+    
     /* Plotter for full-cliques */
     if (glyphclass.equals("fc")) {
 

@@ -17,9 +17,8 @@ int minNodeID;
 int maxNodeID;
 
 class SpyPlot {
-  
+
   SpyPlot() {
-    
   }
 
   void prepareSpyPlot() {
@@ -124,5 +123,7 @@ class SpyPlot {
     }
 
     popMatrix();
+    
+    spyPlotRendered = true;
   }
 }

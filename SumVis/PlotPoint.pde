@@ -23,11 +23,7 @@ class PlotPoint {
   void display() {
     noStroke();  
     
-    if(hasEdge) {
-      /*
-      if(selected) {
-        fill(#ff6666); 
-      }*/
+    if(hasEdge) { 
       // an overlap
       if(isFirst && isSecond) {
         fill(#98137e);

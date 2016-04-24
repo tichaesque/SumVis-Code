@@ -73,6 +73,7 @@ Hairball hairball;
 
 boolean showingHairball = false;
 boolean hairballRendered = false;
+boolean spyPlotRendered = false;
 
 void setup() {
   //background(bgcol); 
@@ -102,7 +103,7 @@ void draw() {
 
   if (showingHairball && !hairballRendered) {
     hairball.display();
-  } else if (!showingHairball) {
+  } else if (!showingHairball && !spyPlotRendered) {
     theSpyPlot.display();
   }
 
@@ -135,10 +136,7 @@ void prepareVisualization() {
   physics=new VerletPhysics2D();
   physics.setWorldBounds(new Rect(10, 10, width-20, height-20));
 
-  physics.clear();
-
-  // create graph
-  //Vec2D center = new Vec2D(width*0.75, height/2);
+  physics.clear(); 
 
   String path = dataPath("");
   File[] files = listFiles(path);
@@ -156,7 +154,6 @@ void prepareVisualization() {
 
   datasetlen = loadStrings(dataset).length; 
 
-  //translate(600, 0);
   createUI();
 }
 
@@ -179,13 +176,26 @@ void makeVisualization() {
   String foundStructures; 
   int numDistinctStructures = 0; 
 
+  // is a part of the hairball currently highlighted?
+  boolean hairballHighlighted = false;
+
   if (newStructureFilePos != structureFilePos) {
     for (int i = 0; i < plotsize; i++) {
       for (int j = 0; j < plotsize; j++) {
+        if (SpyPlotPoints[i][j].isFirst) {
+          hairballHighlighted = true;
+        }
         SpyPlotPoints[i][j].isFirst = false;
         SpyPlotPoints[i][j].isSecond = false;
       }
     }
+
+    // refresh hairball if we're moving along the file
+    if (hairballHighlighted) {
+      hairballRendered = false;
+      spyPlotRendered = false;
+    }
+
     foundselected = false;
     structureFilePos = newStructureFilePos; 
     initializeGraph();
@@ -226,7 +236,6 @@ void makeVisualization() {
       foundStructures += "\n";
     }
   }
-
 
   fill(#071722, 200); 
   noStroke(); 
@@ -313,15 +322,15 @@ void createUI() {
 }
 
 void mouseReleased() {
+  // check if user has clicked on the show hairball button
   if (!((width*0.2 <= mouseX && mouseX <= width*0.2+100) && 
     (50 <= mouseY && mouseY <=50+30))) {
     ArrayList<Glyph> glyphs = c.getGlyphs(); 
     foundselected = false; 
-    hairballRendered = false;
 
     for (Glyph g : glyphs) {
       if (g.clicked) {
-        g.setSelected(true); 
+        g.setSelected(true);  
 
         foundselected = true;
       } else {
@@ -330,6 +339,8 @@ void mouseReleased() {
 
       g.setClicked(false);
     }
+    
+    spyPlotRendered = false;
   }
 }
 
@@ -402,6 +413,7 @@ public void showHairball(int theValue) {
     hairballRendered = false;
   } else {
     hairballButton.setLabel("Show hairball");
+    spyPlotRendered = false;
   }
 }
 
